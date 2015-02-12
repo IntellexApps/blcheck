@@ -1,0 +1,451 @@
+#!/bin/bash
+#
+# title             : blcheck
+# description       : Test any domain against more then 200 black lists.
+# author            : Intellex
+# date              : 20151102
+# version           : 0.1.0
+# usage             : blcheck <domain_or_ip>
+#===============================================================================
+
+
+# Definitions {
+
+	# Colors
+	RED=$(tput setaf 1)
+	GREEN=$(tput setaf 2)
+	YELLOW=$(tput setaf 3)
+	CLEAR=$(tput sgr0)
+
+	# Define spinner
+	#SPINNER="-\|/"
+	#SPINNER=".oO@*"
+	SPINNER="▏▎▍▌▋▊▉▊▋▌▍▎"
+	#SPINNER="←↖↑↗→↘↓↙"
+	#SPINNER="▁▂▃▄▅▆▇█▇▆▅▄▃▁"
+	#SPINNER="▖▘▝▗"
+	#SPINNER="┤┘┴└├┌┬┐"
+	#SPINNER="◢◣◤◥"
+	#SPINNER="◰◳◲◱"
+	#SPINNER="◴◷◶◵"
+	#SPINNER="◐◓◑◒"
+	#SPINNER=" ░▒▓▒░"
+
+
+#~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
+
+
+# Macros {
+
+	# Verbose printing
+	VERBOSE=0
+	OUT() {
+		if [ $VERBOSE -ge $1 ]; then
+			echo $2
+		fi
+	}
+
+	# Error handling
+	ERROR() {
+		echo ERROR: $1 >&2
+		exit 2
+	}
+
+	# Show progres
+	PROGRESS() {
+
+		# Bar
+		BAR=${SPINNER:`expr $1 % ${#SPINNER}`:1}
+		printf "\r [ ${BAR} %3s%% ] checking... %4s / $2  " `expr $1 \* 100 / $2` $1;
+	}
+
+	# Show help
+	HELP() {
+		echo "
+	Usage: blcheck [options] <domain_or_IP>
+
+	Supplied domain must be full quialifined domain name.
+	If the IP is supplied insead the PTR check cannot be executed and will be
+	skipped.
+
+	-v    Verbose mode, can be used multiple times (up to -vvv)
+	-q    Quit mode with absolutely no output
+	-h    The help you are just reading
+		";
+		exit;
+	}
+
+#~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
+
+
+# Default values
+HOST=
+
+# Parse the params
+while test $# -gt 0; do
+        case "$1" in
+
+		# Verbose
+		-v)   VERBOSE=1; shift;;
+		-vv)  VERBOSE=2; shift;;
+		-vvv) VERBOSE=3; shift;;
+
+		# Quite mode
+		-q)   VERBOSE=-1; shift;;
+
+		# Quite mode
+		-h)   HELP; shift;;
+
+		# IP or FCDM
+		*) TARGET=$1; shift;;
+	esac
+done
+
+# Parse IP
+OUT 3 "Using $TARGET for target"
+IP=`echo $TARGET | grep '^[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}$'`
+if [ ! $IP ]; then
+
+	# Try to get the IP
+	OUT 2 "Trying to get the IP for $TARGET"
+	HOST=$TARGET;
+	IP=`dig +short -t a $HOST | grep '^[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}$'`
+	if [ ! $IP ]; then
+		ERROR "No DNS record found for $TARGET"
+	fi
+	OUT 1 "Using $IP for blacklist lookup"
+fi
+
+# Reverse the IP
+REVERSED=$(echo $IP | sed -ne "s~^\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)$~\4.\3.\2.\1~p")
+OUT 3 "Using $REVERSED for reversed IP"
+
+# Get the PTR
+OUT 3 "Checking the PTR record"
+PTR=`dig +short -x $IP | sed s/\.$//`
+if [ ! $PTR ]; then
+	OUT 0 "${YELLOW}Warning: PTR lookup failedP${CLEAR}"
+
+else
+
+	# Match against supplied domain
+	OUT 1 "PTR resolves to $PTR"
+	if [ $HOST ]; then
+		if [ "$HOST" != "$PTR" ]; then
+			OUT 0 "${YELLOW}Warning: PTR record does not match supplied domain: $HOST != $PTR${CLEAR}"
+		else
+			OUT 1 "${GREEN}PTR record matches supplied domain $PTR${CLEAR}"
+		fi
+	fi
+fi
+
+# Define blacklists
+BLISTS="
+	0spam.fusionzero.com
+	0spam-killlist.fusionzero.com
+	all.rbl.jp
+	all.s5h.net
+	all.spamrats.com
+	all.spam-rbl.fr
+	any.dnsl.ipquery.org
+	aspews.ext.sorbs.net
+	b.barracudacentral.org
+	backscatter.spameatingmonkey.net
+	badnets.spameatingmonkey.net
+	bb.barracudacentral.org
+	bl.blocklist.de
+	bl.deadbeef.com
+	bl.drmx.org
+	bl.emailbasura.org
+	bl.konstant.no
+	bl.mailspike.net
+	bl.mav.com.br
+	bl.nszones.com
+	bl.score.senderscore.com
+	bl.spamcannibal.org
+	bl.spamcop.net
+	bl.spameatingmonkey.net
+	bl.spamstinks.com
+	black.junkemailfilter.com
+	blackholes.five-ten-sg.com
+	blackholes.wirehub.net
+	blacklist.sci.kun.nl
+	blacklist.woody.ch
+	block.dnsbl.sorbs.net
+	blocked.hilli.dk
+	bogons.cymru.com
+	bsb.empty.us
+	bsb.spamlookup.net
+	cart00ney.surriel.com
+	cbl.abuseat.org
+	cbl.anti-spam.org.cn
+	cblless.anti-spam.org.cn
+	cblplus.anti-spam.org.cn
+	cdl.anti-spam.org.cn
+	cidr.bl.mcafee.com
+	combined.abuse.ch
+	combined.rbl.msrbl.net
+	db.wpbl.info
+	dev.null.dk
+	dialup.blacklist.jippg.org
+	dialups.mail-abuse.org
+	dialups.visi.com
+	dnsbl.abuse.ch
+	dnsbl.anticaptcha.net
+	dnsbl.antispam.or.id
+	dnsbl.aspnet.hu
+	dnsbl.burnt-tech.com
+	dnsbl.cyberlogic.net
+	dnsbl.dronebl.org
+	dnsbl.inps.de
+	dnsbl.ipocalypse.net
+	dnsbl.justspam.org
+	dnsbl.kempt.net
+	dnsbl.madavi.de
+	dnsbl.mags.net
+	dnsbl.proxybl.org
+	dnsbl.rizon.net
+	dnsbl.rv-soft.info
+	dnsbl.rymsho.ru
+	dnsbl.sorbs.net
+	dnsbl.spam-champuru.livedoor.com
+	dnsbl.tornevall.org
+	dnsbl.webequipped.com
+	dnsbl.zapbl.net
+	dnsbl-0.uceprotect.net
+	dnsbl-1.uceprotect.net
+	dnsbl-2.uceprotect.net
+	dnsbl-3.uceprotect.net
+	dnsrbl.swinog.ch
+	drone.abuse.ch
+	duinv.aupads.org
+	dul.dnsbl.sorbs.net
+	dul.pacifier.net
+	dul.ru
+	dyn.nszones.com
+	dyna.spamrats.com
+	dynip.rothen.com
+	escalations.dnsbl.sorbs.net
+	exitnodes.tor.dnsbl.sectoor.de
+	feb.spamlab.com
+	free.v4bl.org
+	fresh.spameatingmonkey.net
+	hil.habeas.com
+	hostkarma.junkemailfilter.com
+	http.dnsbl.sorbs.net
+	httpbl.abuse.ch
+	images.rbl.msrbl.net
+	intercept.datapacket.net
+	intruders.docs.uu.se
+	ipbl.mailhosts.org
+	ipbl.zeustracker.abuse.ch
+	ips.backscatterer.org
+	ix.dnsbl.manitu.net
+	korea.services.net
+	l1.bbfh.ext.sorbs.net
+	l2.bbfh.ext.sorbs.net
+	l3.bbfh.ext.sorbs.net
+	l4.bbfh.ext.sorbs.net
+	list.bbfh.org
+	list.blogspambl.com
+	lookup.dnsbl.iip.lu
+	mail-abuse.blacklist.jippg.org
+	misc.dnsbl.sorbs.net
+	msgid.bl.gweep.ca
+	multi.surbl.org
+	netbl.spameatingmonkey.net
+	netblock.dnsl.ipquery.org
+	netblockbl.spamgrouper.com
+	netscan.rbl.blockedservers.com
+	new.dnsbl.sorbs.net
+	new.spam.dnsbl.sorbs.net
+	nomail.rhsbl.sorbs.net
+	no-more-funn.moensted.dk
+	noptr.spamrats.com
+	nospam.ant.pl
+	ohps.dnsbl.net.au
+	old.dnsbl.sorbs.net
+	old.spam.dnsbl.sorbs.net
+	omrs.dnsbl.net.au
+	opm.tornevall.org
+	orvedb.aupads.org
+	osps.dnsbl.net.au
+	osrs.dnsbl.net.au
+	owfs.dnsbl.net.au
+	owps.dnsbl.net.au
+	pbl.spamhaus.org
+	phishing.rbl.msrbl.net
+	pofon.foobar.hu
+	probes.dnsbl.net.au
+	problems.dnsbl.sorbs.net
+	proxies.dnsbl.sorbs.net
+	proxy.bl.gweep.ca
+	proxy.block.transip.nl
+	psbl.surriel.com
+	pss.spambusters.org.ar
+	rbl.abuse.ro
+	rbl.blockedservers.com
+	rbl.dns-servicios.com
+	rbl.efnet.org
+	rbl.efnetrbl.org
+	rbl.fasthosts.co.uk
+	rbl.interserver.net
+	rbl.iprange.net
+	rbl.megarbl.net
+	rbl.orbitrbl.com
+	rbl.polarcomm.net
+	rbl.schulte.org
+	rbl.snark.net
+	rbl.spamlab.com
+	rbl.talkactive.net
+	rbl2.triumf.ca
+	rdts.dnsbl.net.au
+	recent.dnsbl.sorbs.net
+	recent.spam.dnsbl.sorbs.net
+	relays.bl.gweep.ca
+	relays.bl.kundenserver.de
+	relays.dnsbl.sorbs.net
+	relays.nether.net
+	residential.block.transip.nl
+	ricn.dnsbl.net.au
+	rmst.dnsbl.net.au
+	rsbl.aupads.org
+	safe.dnsbl.sorbs.net
+	sbl.nszones.com
+	sbl.spamhaus.org
+	sbl-multi.spamrl.com
+	sbl-xbl.spamhaus.org
+	short.rbl.jp
+	shortlist.mailhosts.org
+	singlebl.spamgrouper.com
+	smtp.dnsbl.sorbs.net
+	socks.dnsbl.sorbs.net
+	spam.abuse.ch
+	spam.dnsbl.anonmails.de
+	spam.dnsbl.sorbs.net
+	spam.olsentech.net
+	spam.pedantic.org
+	spam.rbl.blockedservers.com
+	spam.rbl.msrbl.net
+	spam.spamrats.com
+	spamguard.leadmon.net
+	spamlist.or.kr
+	spamrbl.imp.ch
+	spamsources.fabel.dk
+	st.technovision.dk
+	t3direct.dnsbl.net.au
+	tor.ahbl.org
+	tor.dnsbl.sectoor.de
+	tor.efnet.org
+	torexit.dan.me.uk
+	torserver.tor.dnsbl.sectoor.de
+	truncate.gbudb.net
+	ubl.lashback.com
+	ubl.unsubscore.com
+	unsure.nether.net
+	uribl.spameatingmonkey.net
+	urired.spameatingmonkey.net
+	v4.fullbogons.cymru.com
+	virbl.bit.nl
+	virbl.dnsbl.bit.nl
+	virus.rbl.jp
+	virus.rbl.msrbl.net
+	vote.drbl.caravan.ru
+	vote.drbl.gremlin.ru
+	vote.drbldf.dsbl.ru
+	web.dnsbl.sorbs.net
+	web.rbl.msrbl.net
+	work.drbl.caravan.ru
+	work.drbl.gremlin.ru
+	work.drbldf.dsbl.ru
+	wormrbl.imp.ch
+	xbl.spamhaus.org
+	xs.surbl.org
+	z.mailspike.net
+	zen.spamhaus.org
+	zombie.dnsbl.sorbs.net
+"
+
+COUNT=$((`echo "$BLISTS" | wc -l` - 1))
+OUT 1 "Matching against $COUNT blacklists"
+
+# Initialize the counters
+INVALID=0
+PASSED=0
+FAILED=0
+
+# Interate over all blacklists
+I=0;
+for BL in $BLISTS; do
+	PREFIX=
+	I=`expr $I + 1`
+
+	#sleep 1s;
+
+	# What should we test
+	TEST="${REVERSED}.${BL}."
+
+	# For verbose output
+	if [ $VERBOSE -ge 1 ]; then
+
+		# Show percentage
+		STATUS=$(printf " %3s" `expr $I \* 100 / $COUNT`)
+		STATUS="$STATUS%% "
+
+		# Show additional info
+		if [ $VERBOSE -ge 3 ]; then
+			PREFIX=`printf "%-60s" $TEST`
+		else
+			PREFIX=`printf "%-50s" $BL`
+		fi
+
+		PREFIX="$STATUS $PREFIX"
+		printf "$PREFIX \b"
+
+	elif [ $VERBOSE -ge 0 ]; then
+		PROGRESS $I $COUNT
+	fi
+
+	# Get the status
+	RESPONSE=`dig +short -t a +time=3 +tries=2 $TEST 2>&1 | tr '\n' ' ' | sed 's/ *$//'`
+
+	# Not blacklisted
+	if [ ! "$RESPONSE" ]; then
+		if [ $VERBOSE -ge 1 ]; then
+			printf "\r${CLEAR}${PREFIX}✓${CLEAR}\n";
+		fi;
+		PASSED=$(($PASSED+1))
+
+	# Invalid response
+ 	elif [ ! `echo $RESPONSE | grep '^127'` ]; then
+		if [ $VERBOSE -ge 1 ]; then
+			printf "\r${YELLOW}${PREFIX}invalid (${RESPONSE})${CLEAR}\n";
+		fi;
+		INVALID=$(($INVALID+1))
+
+	# Blacklisted
+	else
+		if [ $VERBOSE -ge 1 ]; then
+			printf "\r${RED}${PREFIX}blacklisted (${RESPONSE})${CLEAR}\n";
+		elif [ $VERBOSE -ge 0 ]; then
+			printf "\r${RED}$BL${CLEAR} : $RESPONSE\n"
+		fi
+		FAILED=$(($FAILED+1))
+	fi
+done
+
+# Print results
+if [ $VERBOSE -ge 0 ]; then
+	printf "\r                                                    \n"
+	echo "----------------------------------------------------------"
+	echo Results for $TARGET
+	echo
+	printf "%-15s" "Tested:";	echo ${COUNT}
+	printf "%-15s" "Passed:";	echo ${GREEN}${PASSED}${CLEAR}
+	printf "%-15s" "Invalid:";	echo ${YELLOW}${INVALID}${CLEAR}
+	printf "%-15s" "Blacklisted:";	echo ${RED}${FAILED}${CLEAR}
+	echo "----------------------------------------------------------"
+fi
+
+exit $FAILED;
+
