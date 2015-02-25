@@ -9,7 +9,7 @@ Features
 * Automatic distinction between __domain or IP__
 * Performs __PTR validation__ (only if domain is supplied, does not work for IP)
 * The result of script is the number of servers which blacklisted the domain, so it can be used for any kind of __autonomated scripts like cronjobs__
-* 3 verbose (-v) levels and a quite (-q) mode
+* 3 verbose (-v) levels and a quiet (-q) mode
 * Informative and pleasant output
 
 Requirements
