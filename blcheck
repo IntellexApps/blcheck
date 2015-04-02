@@ -361,8 +361,7 @@ BLISTS="
 	xs.surbl.org
 	z.mailspike.net
 	zen.spamhaus.org
-	zombie.dnsbl.sorbs.net
-"
+	zombie.dnsbl.sorbs.net"
 
 COUNT=$((`echo "$BLISTS" | wc -l` - 1))
 OUT 1 "Matching against $COUNT blacklists"
