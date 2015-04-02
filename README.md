@@ -31,7 +31,7 @@ Usage
 #### Without root access
 1. Download the script to your system
 2. Type `chmod +x /path/to/blcheck`
-3. Type `/path/to/blcheck <path_to_the_keystore>`
+3. Type `/path/to/blcheck <domain_or_ip>`
 4. Wait for the answer, it might take some time
 
 
@@ -44,7 +44,7 @@ Inapp help
 	skipped.
 
 	-v    Verbose mode, can be used multiple times (up to -vvv)
-	-q    Quit mode with absolutely no output
+	-q    Quiet mode with absolutely no output
 	-h    The help you are just reading
 
 
