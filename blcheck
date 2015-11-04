@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # title             : blcheck
 # description       : Test any domain against more then 200 black lists.
@@ -277,7 +277,8 @@
     PROGRESS() {
 
         # Bar
-        BAR=${SPINNER:$(($1 % ${#SPINNER})):1}
+        x=$(($1 % ${#SPINNER} + 1))
+        BAR=$(echo $SPINNER | awk "{ print substr(\$0, ${x}, 1) }")
         if test -z "$PLAIN"; then
             printf "\r ";
         fi
@@ -427,7 +428,7 @@ for BL in $BLISTS; do
         PASSED=$((PASSED + 1))
 
     # Invalid response
-    elif [[ "$RESPONSE" != 127*  ]]; then
+    elif [ "$RESPONSE" != 127*  ]; then
         if [ $VERBOSE -ge 1 ]; then
             if test -z "$PLAIN"; then
                 printf "\r";
