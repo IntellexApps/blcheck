@@ -45,6 +45,7 @@ Inapp help
 
 	-v    Verbose mode, can be used multiple times (up to -vvv)
 	-q    Quiet mode with absolutely no output
+	-p    Plain text output (no coloring, no interactive status, no progress)
 	-h    The help you are just reading
 
 
