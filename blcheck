@@ -2,9 +2,9 @@
 #
 # title             : blcheck
 # description       : Test any domain against more then 200 black lists.
-# author            : Intellex
-# date              : 20151102
-# version           : 0.1.1
+# author            : Darko Poljak (originaly Intellex)
+# date              : 20151104
+# version           : 0.2.1
 # usage             : blcheck <domain_or_ip>
 #===============================================================================
 
@@ -243,15 +243,15 @@
 	# Define spinner
 	#SPINNER="-\|/"
 	#SPINNER=".oO@*"
-	#SPINNER="▉▊▋▌▍▎▏▎▍▌▋▊▉"
-	#SPINNER="←↖↑↗→↘↓↙"
-	#SPINNER="▁▂▃▄▅▆▇█▇▆▅▄▃▁"
-	SPINNER="▖▘▝▗"
-	#SPINNER="┤┘┴└├┌┬┐"
-	#SPINNER="◢◣◤◥"
-	#SPINNER="◰◳◲◱"
-	#SPINNER="◴◷◶◵"
-	#SPINNER="◐◓◑◒"
+	#SPINNER="?????????????"
+	#SPINNER="‹?^?›?ˇ?"
+	#SPINNER="???-???-???-??"
+	SPINNER="????"
+	#SPINNER="+-+L+-T¬"
+	#SPINNER="????"
+	#SPINNER="????"
+	#SPINNER="????"
+	#SPINNER="????"
 
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
@@ -277,8 +277,11 @@
 	PROGRESS() {
 
 		# Bar
-		BAR=${SPINNER:$(($1 % ${#SPINNER})):1}
-		printf "\r [ ${BAR} %3s%% ] checking... %4s / $2  " $(($1 * 100 / $2)) "$1";
+        BAR=${SPINNER:$(($1 % ${#SPINNER})):1}
+        if test $PLAIN -eq 0; then
+	    	printf "\r ";
+        fi
+        printf "[ ${BAR} %3s%% ] checking... %4s / $2  " $(($1 * 100 / $2)) "$1";
 	}
 
 	# Show help
@@ -292,6 +295,7 @@
 
 	-v    Verbose mode, can be used multiple times (up to -vvv)
 	-q    Quit mode with absolutely no output
+	-p    Plain text output (no coloring, no interactive status, no progress)
 	-h    The help you are just reading
 		";
 		exit;
@@ -302,6 +306,7 @@
 
 # Default values
 HOST=
+PLAIN=
 
 # Parse the params
 while test $# -gt 0; do
@@ -314,7 +319,9 @@ while test $# -gt 0; do
 
 		# Quite mode
 		-q)   VERBOSE=-1; shift;;
-
+        
+		# Plain text output
+		-p)   PLAIN=1 RED= GREEN= YELLOW= CLEAR= ; shift;;
 		# Quite mode
 		-h)   HELP; shift;;
 
@@ -395,10 +402,14 @@ for BL in $BLISTS; do
 		fi
 
 		PREFIX="$STATUS $PREFIX"
-		printf "%s \b" "$PREFIX"
+		if test -z "$PLAIN"; then
+            		printf "%s \b" "$PREFIX"
+		fi
 
 	elif [ $VERBOSE -ge 0 ]; then
-		PROGRESS "$I" "$COUNT"
+		if test -z "$PLAIN"; then
+			PROGRESS "$I" "$COUNT"
+		fi
 	fi
 
 	# Get the status
@@ -407,24 +418,36 @@ for BL in $BLISTS; do
 	# Not blacklisted
 	if [ ! "$RESPONSE" ]; then
 		if [ $VERBOSE -ge 1 ]; then
-			printf "\r%s%s✓%s\n" "$CLEAR" "$PREFIX" "$CLEAR";
+			if test -z "$PLAIN"; then
+				printf "\r";
+			fi
+			printf "%s%s?%s\n" "$CLEAR" "$PREFIX" "$CLEAR";
 		fi;
 		PASSED=$((PASSED + 1))
 
 	# Invalid response
  	elif [[ "$RESPONSE" != 127*  ]]; then
 		if [ $VERBOSE -ge 1 ]; then
-			printf "\r%s%sinvalid (%s)%s\n" "$YELLOW" "$PREFIX" "$RESPONSE" "$CLEAR";
+			if test -z "$PLAIN"; then
+				printf "\r";
+			fi
+			printf "%s%sinvalid (%s)%s\n" "$YELLOW" "$PREFIX" "$RESPONSE" "$CLEAR";
 		fi;
 		INVALID=$((INVALID + 1))
 
 	# Blacklisted
 	else
 		if [ $VERBOSE -ge 1 ]; then
-			printf "\r%s%sblacklisted (%s)%s\n" "$RED" "$PREFIX" "$RESPONSE" "$CLEAR";
+			if test -z "$PLAIN"; then
+				printf "\r";
+			fi
+			printf "%s%sblacklisted (%s)%s\n" "$RED" "$PREFIX" "$RESPONSE" "$CLEAR";
 		elif [ $VERBOSE -ge 0 ]; then
-			printf "\r                                                          "
-			printf "\r%s%s%s : %s\n" "$RED" "$BL" "$CLEAR" "$RESPONSE"
+			if test -z "$PLAIN"; then
+				printf "\r                                                          "
+				printf "\r";
+			fi
+			printf "%s%s%s : %s\n" "$RED" "$BL" "$CLEAR" "$RESPONSE"
 		fi
 		FAILED=$((FAILED + 1))
 	fi
@@ -432,7 +455,11 @@ done
 
 # Print results
 if [ $VERBOSE -ge 0 ]; then
-	printf "\r                                                    \n"
+	if test -z "$PLAIN"; then
+		printf "\r                                                    \n"
+	else
+		printf "                                                     \n"
+	fi
 	echo "----------------------------------------------------------"
 	echo Results for "$TARGET"
 	echo
