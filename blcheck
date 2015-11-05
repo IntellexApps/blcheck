@@ -2,9 +2,9 @@
 #
 # title             : blcheck
 # description       : Test any domain against more then 200 black lists.
-# author            : Intellex
-# date              : 20151102
-# version           : 0.1.1
+# author            : Intellex; Darko Poljak
+# date              : 20151105
+# version           : 0.2.0
 # usage             : blcheck <domain_or_ip>
 #===============================================================================
 
