@@ -282,7 +282,8 @@
         if test -z "$PLAIN"; then
             printf "\r ";
         fi
-        printf "[ ${BAR} %3s%% ] checking... %4s / $2  " $(($1 * 100 / $2)) "$1";
+        # BAR as printf arg so that backslash will be litteraly interpreted
+        printf "[ %s %3s%% ] checking... %4s / $2  " ${BAR} $(($1 * 100 / $2)) "$1";
     }
 
     # Show help
