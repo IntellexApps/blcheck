@@ -1,6 +1,8 @@
 # blcheck
 
 A powerfull script for testing a domain or an IP against mailing black lists.
+blcheck-host uses dig if it is found. If not then uses host, if found.
+This wariant works with e.g. FreeBSD base.
 
 Features
 --------------------
@@ -15,7 +17,7 @@ Features
 Requirements
 --------------------
 
-* Any linux distribution wih bash
+* Any unix/linux with POSIX shell.
 
 
 Usage
@@ -52,3 +54,4 @@ Inapp help
 Credits
 --------------------
 Script has been written by the [Intellex](http://intellex.rs/en) team.
+It is modified by Darko Poljak (https://github.com/darko-poljak).
