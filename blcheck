@@ -243,15 +243,15 @@
     # Define spinner
     #SPINNER="-\|/"
     #SPINNER=".oO@*"
-    #SPINNER="?????????????"
-    #SPINNER="‹?^?›?ˇ?"
-    #SPINNER="???-???-???-??"
-    SPINNER="????"
-    #SPINNER="+-+L+-T¬"
-    #SPINNER="????"
-    #SPINNER="????"
-    #SPINNER="????"
-    #SPINNER="????"
+    #SPINNER="▉▊▋▌▍▎▏▎▍▌▋▊▉"
+    #SPINNER="←↖↑↗→↘↓↙"
+    #SPINNER="▁▂▃▄▅▆▇█▇▆▅▄▃▁"
+    SPINNER="▖▘▝▗"
+    #SPINNER="┤┘┴└├┌┬┐"
+    #SPINNER="◢◣◤◥"
+    #SPINNER="◰◳◲◱"
+    #SPINNER="◴◷◶◵"
+    #SPINNER="◐◓◑◒"
 
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
@@ -423,7 +423,7 @@ for BL in $BLISTS; do
             if test -z "$PLAIN"; then
                 printf "\r";
             fi
-            printf "%s%s?%s\n" "$CLEAR" "$PREFIX" "$CLEAR";
+            printf "%s%s✓%s\n" "$CLEAR" "$PREFIX" "$CLEAR";
         fi;
         PASSED=$((PASSED + 1))
 
