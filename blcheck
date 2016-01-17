@@ -246,6 +246,8 @@
 
     # Common regular expresions
 	REGEX_IP='\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)'
+	REGEX_DOMAIN='\([a-zA-Z0-9]\+\(-[a-zA-Z0-9]\+\)*\.\)\+[a-zA-Z]\{2,\}'
+	REGEX_TDL='\([a-zA-Z0-9]\+\(-[a-zA-Z0-9]\+\)*\.\)[a-zA-Z]\{2,\}$'
 
     # Colors
     RED=$(tput setaf 1)
@@ -310,21 +312,43 @@
 
 		# Resolve domain
 		else
+
+			# Handle special resolve types
+			case "$2" in
+				"ns" ) TYPE="ns"; REGEX="$REGEX_DOMAIN\.$";;
+				   * ) TYPE="a";  REGEX="$REGEX_IP$";;
+			esac
+
 			case "$CMD" in
-				$CMD_DIG ) "$CMD" +short -t a +time=$CONF_DNS_DURATION +tries=$CONF_DNS_TRIES "$1" | grep -om 1 "^$REGEX_IP$";;
-				$CMD_HOST ) "$CMD" -t A -W $CONF_DNS_DURATION -R $CONF_DNS_TRIES "$1" | grep -om 1 "$REGEX_IP$";;
+				$CMD_DIG ) "$CMD" +short -t "$TYPE" +time=$CONF_DNS_DURATION +tries=$CONF_DNS_TRIES "$1" | grep -om 1 "$REGEX";;
+				$CMD_HOST ) "$CMD" -t "$TYPE" -W $CONF_DNS_DURATION -R $CONF_DNS_TRIES "$1" | grep -om 1 "$REGEX";;
 			esac
 		fi
+	}
+
+    # Load the blacklist from file
+    loadBlacklists() {
+
+		# Make sure the file is readable
+		if [ ! "$1" ]; then
+			error "Option -l requires an additional parameter";
+		elif [ ! -r $1 ]; then
+			error "File $1 cannot be opened for reading, make sure it exists and that you have appropriate privileges"
+		fi
+
+		CONF_BLACKLISTS=$(cat "$1")
 	}
 
     # Show help
     help() {
 		cat <<HELP
-blcheck [options] <domain\_or\_IP>
+blcheck [options] <domain_or_IP>
 
 Supplied domain must be full qualified domain name.
 If the IP is supplied, the PTR check cannot be executed and will be skipped.
 
+-l file     Load blacklists from file, separated by space or new line
+-c          Warn if the top level domain of the blacklist has expired
 -v          Verbose mode, can be used multiple times (up to -vvv)
 -q          Quiet modem with absolutely no output (useful for scripts)
 -p          Plain text output (no coloring, no interactive status)
@@ -340,8 +364,10 @@ HELP
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
 
 # Parse the params
-while getopts :vqphl: arg; do
+while getopts :vqphcl: arg; do
     case "$arg" in
+        l) loadBlacklists $OPTARG;;
+        c) VERIFY_BL=TRUE;;
         v) VERBOSE=$(( (VERBOSE + 1) % 4));;
         q) VERBOSE=-1;;
         p) PLAIN=1 RED="" GREEN="" YELLOW="" CLEAR="" ;;
@@ -410,7 +436,33 @@ else
     fi
 fi
 
-COUNT=$(($(echo "$CONF_BLACKLISTS" | wc -l) - 1))
+# Filter out the blacklists
+BLACKLISTS=""
+for BL in $CONF_BLACKLISTS; do
+	if [ "$BL" ]; then
+
+		# Make sure the domain is a proper one
+		DOMAIN=$(echo "$BL" | sed -e 's/^[ \t]*//' | grep ^"$REGEX_DOMAIN"$)
+		if [ ! "$DOMAIN" ]; then
+			info 0 "${YELLOW}Warning: blacklist '$BL' is not valid and will be ignored${CLEAR}"
+
+		else
+
+			# It is a proper blacklist
+			if [ "$BLACKLISTS" ]; then
+				BLACKLISTS=$(echo "$BLACKLISTS\n$DOMAIN")
+			else
+				BLACKLISTS="$BL"
+			fi
+		fi
+	fi
+done
+
+# Make sure we have at least one blacklist
+COUNT=$(($(echo "$BLACKLISTS" | wc -l)))
+if [ ! "$BLACKLISTS" ] || [ "$COUNT" -eq 0 ]; then
+	error "No blacklists have been specified"
+fi
 info 1 "Matching against $COUNT blacklists"
 
 # Initialize the counters
@@ -420,12 +472,17 @@ FAILED=0
 
 # Interate over all blacklists
 I=0;
-for BL in $CONF_BLACKLISTS; do
+for BL in $BLACKLISTS; do
     PREFIX=
     I=$((I + 1))
 
     # What should we test
-    TEST="${REVERSED}.${BL}."
+    TEST="$REVERSED.$BL."
+
+    # Make sure the info is shown if we are cheking the servers
+    if [ "$VERIFY_BL" ] && [ $VERBOSE -lt 1 ]; then
+		VERBOSE=1
+    fi
 
     # For verbose output
     if [ $VERBOSE -ge 1 ]; then
@@ -458,36 +515,42 @@ for BL in $CONF_BLACKLISTS; do
 
     # Not blacklisted
     if [ ! "$RESPONSE" ]; then
-        if [ $VERBOSE -ge 1 ]; then
-            if test -z "$PLAIN"; then
-                printf "\r";
-            fi
-            printf "%s%s✓%s\n" "$CLEAR" "$PREFIX" "$CLEAR";
+
+		# Make sure the server is viable
+		ERROR=""
+		if [ "$VERIFY_BL" ]; then
+			TDL=$(echo "$BL" | grep -om 1 '\([a-zA-Z0-9]\+\(-[a-zA-Z0-9]\+\)*\.\)[a-zA-Z]\{2,\}$')
+			if [ ! "$(resolve "$TDL" ns)" ]; then
+				if test -z "$PLAIN"; then printf "\r"; fi
+				printf "%s%sUnreachable server%s\n" "$YELLOW" "$PREFIX" "$CLEAR";
+				INVALID=$((INVALID + 1))
+				ERROR=TRUE
+			fi
+		fi
+
+		if [ ! "$ERROR" ]; then
+			if [ "$VERIFY_BL" ] || [ $VERBOSE -ge 1 ]; then
+				if test -z "$PLAIN"; then printf "\r"; fi
+				printf "%s%s✓%s\n" "$CLEAR" "$PREFIX" "$CLEAR";
+			fi
+			PASSED=$((PASSED + 1))
         fi;
-        PASSED=$((PASSED + 1))
 
     # Invalid response
     elif [ "$START" != "127."  ]; then
         if [ $VERBOSE -ge 1 ]; then
-            if test -z "$PLAIN"; then
-                printf "\r";
-            fi
-            printf "%s%sinvalid (%s)%s\n" "$YELLOW" "$PREFIX" "$RESPONSE" "$CLEAR";
+            if test -z "$PLAIN"; then printf "\r"; fi
+            printf "%s%sinvalid response (%s)%s\n" "$YELLOW" "$PREFIX" "$RESPONSE" "$CLEAR";
         fi;
-        INVALID=$((INVALID + 1))
+		INVALID=$((INVALID + 1))
 
     # Blacklisted
     else
         if [ $VERBOSE -ge 1 ]; then
-            if test -z "$PLAIN"; then
-                printf "\r";
-            fi
+            if test -z "$PLAIN"; then printf "\r"; fi
             printf "%s%sblacklisted (%s)%s\n" "$RED" "$PREFIX" "$RESPONSE" "$CLEAR";
         elif [ $VERBOSE -ge 0 ]; then
-            if test -z "$PLAIN"; then
-                printf "\r                                                          "
-                printf "\r";
-            fi
+			if test -z "$PLAIN"; then printf "\r                                                          "; printf "\r"; fi
             printf "%s%s%s : %s\n" "$RED" "$BL" "$CLEAR" "$RESPONSE"
         fi
         FAILED=$((FAILED + 1))
