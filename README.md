@@ -39,6 +39,11 @@ Result of the script is the number of blacklisted entries. So if the supplied
 IP is not blacklisted on any of the servers the result is 0.
 
 
+TODO
+--------------------
+1. Handle domains with multiple DNS entries.
+
+
 Credits
 --------------------
 Script has been written by the [Intellex](http://intellex.rs/en) team.  

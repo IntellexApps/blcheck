@@ -311,8 +311,8 @@
 		# Resolve domain
 		else
 			case "$CMD" in
-				$CMD_DIG ) "$CMD" +short -t a +time=$CONF_DNS_DURATION +tries=$CONF_DNS_TRIES "$1" | grep -o "^$REGEX_IP$";;
-				$CMD_HOST ) "$CMD" -t A -W $CONF_DNS_DURATION -R $CONF_DNS_TRIES "$1" | grep -o "$REGEX_IP$";;
+				$CMD_DIG ) "$CMD" +short -t a +time=$CONF_DNS_DURATION +tries=$CONF_DNS_TRIES "$1" | grep -om 1 "^$REGEX_IP$";;
+				$CMD_HOST ) "$CMD" -t A -W $CONF_DNS_DURATION -R $CONF_DNS_TRIES "$1" | grep -om 1 "$REGEX_IP$";;
 			esac
 		fi
 	}
