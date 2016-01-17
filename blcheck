@@ -2,237 +2,250 @@
 #
 # title             : blcheck
 # description       : Test any domain against more then 200 black lists.
-# author            : Intellex; Darko Poljak
-# date              : 20151105
-# version           : 0.2.0
-# usage             : blcheck <domain_or_ip>
+# author            : Intellex
+# contributors      : Darko Poljak
+# date              : 20160117
+# version           : 0.5.0
+# usage             : blcheck [options] <domain_or_ip>
 #===============================================================================
+
+# Config {
+
+
+	# How many tries and for how long to wait for DNS queries
+	CONF_DNS_TRIES=2
+	CONF_DNS_DURATION=3
+
+    # Blacklists to check
+    CONF_BLACKLISTS="
+		0spam.fusiasdonzero.com
+		0spam-killlist.fusionzero.com
+		all.rbl.jp
+		all.s5h.net
+		all.spamrats.com
+		all.spam-rbl.fr
+		any.dnsl.ipquery.org
+		aspews.ext.sorbs.net
+		b.barracudacentral.org
+		backscatter.spameatingmonkey.net
+		badnets.spameatingmonkey.net
+		bb.barracudacentral.org
+		bl.blocklist.de
+		bl.deadbeef.com
+		bl.drmx.org
+		bl.emailbasura.org
+		bl.konstant.no
+		bl.mailspike.net
+		bl.mav.com.br
+		bl.nszones.com
+		bl.score.senderscore.com
+		bl.spamcannibal.org
+		bl.spamcop.net
+		bl.spameatingmonkey.net
+		bl.spamstinks.com
+		black.junkemailfilter.com
+		blackholes.five-ten-sg.com
+		blackholes.wirehub.net
+		blacklist.sci.kun.nl
+		blacklist.woody.ch
+		block.dnsbl.sorbs.net
+		blocked.hilli.dk
+		bogons.cymru.com
+		bsb.empty.us
+		bsb.spamlookup.net
+		cart00ney.surriel.com
+		cbl.abuseat.org
+		cbl.anti-spam.org.cn
+		cblless.anti-spam.org.cn
+		cblplus.anti-spam.org.cn
+		cdl.anti-spam.org.cn
+		cidr.bl.mcafee.com
+		combined.abuse.ch
+		combined.rbl.msrbl.net
+		db.wpbl.info
+		dev.null.dk
+		dialup.blacklist.jippg.org
+		dialups.mail-abuse.org
+		dialups.visi.com
+		dnsbl.abuse.ch
+		dnsbl.anticaptcha.net
+		dnsbl.antispam.or.id
+		dnsbl.aspnet.hu
+		dnsbl.burnt-tech.com
+		dnsbl.cyberlogic.net
+		dnsbl.dronebl.org
+		dnsbl.inps.de
+		dnsbl.ipocalypse.net
+		dnsbl.justspam.org
+		dnsbl.kempt.net
+		dnsbl.madavi.de
+		dnsbl.mags.net
+		dnsbl.proxybl.org
+		dnsbl.rizon.net
+		dnsbl.rv-soft.info
+		dnsbl.rymsho.ru
+		dnsbl.sorbs.net
+		dnsbl.spam-champuru.livedoor.com
+		dnsbl.tornevall.org
+		dnsbl.webequipped.com
+		dnsbl.zapbl.net
+		dnsbl-0.uceprotect.net
+		dnsbl-1.uceprotect.net
+		dnsbl-2.uceprotect.net
+		dnsbl-3.uceprotect.net
+		dnsrbl.swinog.ch
+		drone.abuse.ch
+		duinv.aupads.org
+		dul.dnsbl.sorbs.net
+		dul.pacifier.net
+		dul.ru
+		dyn.nszones.com
+		dyna.spamrats.com
+		dynip.rothen.com
+		escalations.dnsbl.sorbs.net
+		exitnodes.tor.dnsbl.sectoor.de
+		feb.spamlab.com
+		free.v4bl.org
+		fresh.spameatingmonkey.net
+		hil.habeas.com
+		hostkarma.junkemailfilter.com
+		http.dnsbl.sorbs.net
+		httpbl.abuse.ch
+		images.rbl.msrbl.net
+		intruders.docs.uu.se
+		ipbl.mailhosts.org
+		ipbl.zeustracker.abuse.ch
+		ips.backscatterer.org
+		ix.dnsbl.manitu.net
+		korea.services.net
+		l1.bbfh.ext.sorbs.net
+		l2.bbfh.ext.sorbs.net
+		l3.bbfh.ext.sorbs.net
+		l4.bbfh.ext.sorbs.net
+		list.bbfh.org
+		list.blogspambl.com
+		lookup.dnsbl.iip.lu
+		mail-abuse.blacklist.jippg.org
+		misc.dnsbl.sorbs.net
+		msgid.bl.gweep.ca
+		multi.surbl.org
+		netbl.spameatingmonkey.net
+		netblock.dnsl.ipquery.org
+		netblockbl.spamgrouper.com
+		netscan.rbl.blockedservers.com
+		new.dnsbl.sorbs.net
+		new.spam.dnsbl.sorbs.net
+		nomail.rhsbl.sorbs.net
+		no-more-funn.moensted.dk
+		noptr.spamrats.com
+		nospam.ant.pl
+		ohps.dnsbl.net.au
+		old.dnsbl.sorbs.net
+		old.spam.dnsbl.sorbs.net
+		omrs.dnsbl.net.au
+		opm.tornevall.org
+		orvedb.aupads.org
+		osps.dnsbl.net.au
+		osrs.dnsbl.net.au
+		owfs.dnsbl.net.au
+		owps.dnsbl.net.au
+		pbl.spamhaus.org
+		phishing.rbl.msrbl.net
+		pofon.foobar.hu
+		probes.dnsbl.net.au
+		problems.dnsbl.sorbs.net
+		proxies.dnsbl.sorbs.net
+		proxy.bl.gweep.ca
+		proxy.block.transip.nl
+		psbl.surriel.com
+		pss.spambusters.org.ar
+		rbl.abuse.ro
+		rbl.blockedservers.com
+		rbl.dns-servicios.com
+		rbl.efnet.org
+		rbl.efnetrbl.org
+		rbl.fasthosts.co.uk
+		rbl.interserver.net
+		rbl.iprange.net
+		rbl.megarbl.net
+		rbl.orbitrbl.com
+		rbl.polarcomm.net
+		rbl.schulte.org
+		rbl.snark.net
+		rbl.spamlab.com
+		rbl.talkactive.net
+		rbl2.triumf.ca
+		rdts.dnsbl.net.au
+		recent.dnsbl.sorbs.net
+		recent.spam.dnsbl.sorbs.net
+		relays.bl.gweep.ca
+		relays.bl.kundenserver.de
+		relays.dnsbl.sorbs.net
+		relays.nether.net
+		residential.block.transip.nl
+		ricn.dnsbl.net.au
+		rmst.dnsbl.net.au
+		rsbl.aupads.org
+		safe.dnsbl.sorbs.net
+		sbl.nszones.com
+		sbl.spamhaus.org
+		sbl-multi.spamrl.com
+		sbl-xbl.spamhaus.org
+		short.rbl.jp
+		shortlist.mailhosts.org
+		singlebl.spamgrouper.com
+		smtp.dnsbl.sorbs.net
+		socks.dnsbl.sorbs.net
+		spam.abuse.ch
+		spam.dnsbl.anonmails.de
+		spam.dnsbl.sorbs.net
+		spam.olsentech.net
+		spam.pedantic.org
+		spam.rbl.blockedservers.com
+		spam.rbl.msrbl.net
+		spam.spamrats.com
+		spamguard.leadmon.net
+		spamlist.or.kr
+		spamrbl.imp.ch
+		spamsources.fabel.dk
+		st.technovision.dk
+		t3direct.dnsbl.net.au
+		tor.dnsbl.sectoor.de
+		tor.efnet.org
+		torexit.dan.me.uk
+		torserver.tor.dnsbl.sectoor.de
+		truncate.gbudb.net
+		ubl.lashback.com
+		ubl.unsubscore.com
+		unsure.nether.net
+		uribl.spameatingmonkey.net
+		urired.spameatingmonkey.net
+		v4.fullbogons.cymru.com
+		virbl.bit.nl
+		virbl.dnsbl.bit.nl
+		virus.rbl.jp
+		virus.rbl.msrbl.net
+		vote.drbl.caravan.ru
+		vote.drbl.gremlin.ru
+		vote.drbldf.dsbl.ru
+		web.dnsbl.sorbs.net
+		web.rbl.msrbl.net
+		work.drbl.caravan.ru
+		work.drbl.gremlin.ru
+		work.drbldf.dsbl.ru
+		wormrbl.imp.ch
+		xbl.spamhaus.org
+		xs.surbl.org
+		z.mailspike.net"
+
+
+#~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
 
 
 # Definitions {
 
-    # Blacklists to check
-    BLISTS="
-        0spam.fusiasdonzero.com
-        0spam-killlist.fusionzero.com
-        all.rbl.jp
-        all.s5h.net
-        all.spamrats.com
-        all.spam-rbl.fr
-        any.dnsl.ipquery.org
-        aspews.ext.sorbs.net
-        b.barracudacentral.org
-        backscatter.spameatingmonkey.net
-        badnets.spameatingmonkey.net
-        bb.barracudacentral.org
-        bl.blocklist.de
-        bl.deadbeef.com
-        bl.drmx.org
-        bl.emailbasura.org
-        bl.konstant.no
-        bl.mailspike.net
-        bl.mav.com.br
-        bl.nszones.com
-        bl.score.senderscore.com
-        bl.spamcannibal.org
-        bl.spamcop.net
-        bl.spameatingmonkey.net
-        bl.spamstinks.com
-        black.junkemailfilter.com
-        blackholes.five-ten-sg.com
-        blackholes.wirehub.net
-        blacklist.sci.kun.nl
-        blacklist.woody.ch
-        block.dnsbl.sorbs.net
-        blocked.hilli.dk
-        bogons.cymru.com
-        bsb.empty.us
-        bsb.spamlookup.net
-        cart00ney.surriel.com
-        cbl.abuseat.org
-        cbl.anti-spam.org.cn
-        cblless.anti-spam.org.cn
-        cblplus.anti-spam.org.cn
-        cdl.anti-spam.org.cn
-        cidr.bl.mcafee.com
-        combined.abuse.ch
-        combined.rbl.msrbl.net
-        db.wpbl.info
-        dev.null.dk
-        dialup.blacklist.jippg.org
-        dialups.mail-abuse.org
-        dialups.visi.com
-        dnsbl.abuse.ch
-        dnsbl.anticaptcha.net
-        dnsbl.antispam.or.id
-        dnsbl.aspnet.hu
-        dnsbl.burnt-tech.com
-        dnsbl.cyberlogic.net
-        dnsbl.dronebl.org
-        dnsbl.inps.de
-        dnsbl.ipocalypse.net
-        dnsbl.justspam.org
-        dnsbl.kempt.net
-        dnsbl.madavi.de
-        dnsbl.mags.net
-        dnsbl.proxybl.org
-        dnsbl.rizon.net
-        dnsbl.rv-soft.info
-        dnsbl.rymsho.ru
-        dnsbl.sorbs.net
-        dnsbl.spam-champuru.livedoor.com
-        dnsbl.tornevall.org
-        dnsbl.webequipped.com
-        dnsbl.zapbl.net
-        dnsbl-0.uceprotect.net
-        dnsbl-1.uceprotect.net
-        dnsbl-2.uceprotect.net
-        dnsbl-3.uceprotect.net
-        dnsrbl.swinog.ch
-        drone.abuse.ch
-        duinv.aupads.org
-        dul.dnsbl.sorbs.net
-        dul.pacifier.net
-        dul.ru
-        dyn.nszones.com
-        dyna.spamrats.com
-        dynip.rothen.com
-        escalations.dnsbl.sorbs.net
-        exitnodes.tor.dnsbl.sectoor.de
-        feb.spamlab.com
-        free.v4bl.org
-        fresh.spameatingmonkey.net
-        hil.habeas.com
-        hostkarma.junkemailfilter.com
-        http.dnsbl.sorbs.net
-        httpbl.abuse.ch
-        images.rbl.msrbl.net
-        intercept.datapacket.net
-        intruders.docs.uu.se
-        ipbl.mailhosts.org
-        ipbl.zeustracker.abuse.ch
-        ips.backscatterer.org
-        ix.dnsbl.manitu.net
-        korea.services.net
-        l1.bbfh.ext.sorbs.net
-        l2.bbfh.ext.sorbs.net
-        l3.bbfh.ext.sorbs.net
-        l4.bbfh.ext.sorbs.net
-        list.bbfh.org
-        list.blogspambl.com
-        lookup.dnsbl.iip.lu
-        mail-abuse.blacklist.jippg.org
-        misc.dnsbl.sorbs.net
-        msgid.bl.gweep.ca
-        multi.surbl.org
-        netbl.spameatingmonkey.net
-        netblock.dnsl.ipquery.org
-        netblockbl.spamgrouper.com
-        netscan.rbl.blockedservers.com
-        new.dnsbl.sorbs.net
-        new.spam.dnsbl.sorbs.net
-        nomail.rhsbl.sorbs.net
-        no-more-funn.moensted.dk
-        noptr.spamrats.com
-        nospam.ant.pl
-        ohps.dnsbl.net.au
-        old.dnsbl.sorbs.net
-        old.spam.dnsbl.sorbs.net
-        omrs.dnsbl.net.au
-        opm.tornevall.org
-        orvedb.aupads.org
-        osps.dnsbl.net.au
-        osrs.dnsbl.net.au
-        owfs.dnsbl.net.au
-        owps.dnsbl.net.au
-        pbl.spamhaus.org
-        phishing.rbl.msrbl.net
-        pofon.foobar.hu
-        probes.dnsbl.net.au
-        problems.dnsbl.sorbs.net
-        proxies.dnsbl.sorbs.net
-        proxy.bl.gweep.ca
-        proxy.block.transip.nl
-        psbl.surriel.com
-        pss.spambusters.org.ar
-        rbl.abuse.ro
-        rbl.blockedservers.com
-        rbl.dns-servicios.com
-        rbl.efnet.org
-        rbl.efnetrbl.org
-        rbl.fasthosts.co.uk
-        rbl.interserver.net
-        rbl.iprange.net
-        rbl.megarbl.net
-        rbl.orbitrbl.com
-        rbl.polarcomm.net
-        rbl.schulte.org
-        rbl.snark.net
-        rbl.spamlab.com
-        rbl.talkactive.net
-        rbl2.triumf.ca
-        rdts.dnsbl.net.au
-        recent.dnsbl.sorbs.net
-        recent.spam.dnsbl.sorbs.net
-        relays.bl.gweep.ca
-        relays.bl.kundenserver.de
-        relays.dnsbl.sorbs.net
-        relays.nether.net
-        residential.block.transip.nl
-        ricn.dnsbl.net.au
-        rmst.dnsbl.net.au
-        rsbl.aupads.org
-        safe.dnsbl.sorbs.net
-        sbl.nszones.com
-        sbl.spamhaus.org
-        sbl-multi.spamrl.com
-        sbl-xbl.spamhaus.org
-        short.rbl.jp
-        shortlist.mailhosts.org
-        singlebl.spamgrouper.com
-        smtp.dnsbl.sorbs.net
-        socks.dnsbl.sorbs.net
-        spam.abuse.ch
-        spam.dnsbl.anonmails.de
-        spam.dnsbl.sorbs.net
-        spam.olsentech.net
-        spam.pedantic.org
-        spam.rbl.blockedservers.com
-        spam.rbl.msrbl.net
-        spam.spamrats.com
-        spamguard.leadmon.net
-        spamlist.or.kr
-        spamrbl.imp.ch
-        spamsources.fabel.dk
-        st.technovision.dk
-        t3direct.dnsbl.net.au
-        tor.dnsbl.sectoor.de
-        tor.efnet.org
-        torexit.dan.me.uk
-        torserver.tor.dnsbl.sectoor.de
-        truncate.gbudb.net
-        ubl.lashback.com
-        ubl.unsubscore.com
-        unsure.nether.net
-        uribl.spameatingmonkey.net
-        urired.spameatingmonkey.net
-        v4.fullbogons.cymru.com
-        virbl.bit.nl
-        virbl.dnsbl.bit.nl
-        virus.rbl.jp
-        virus.rbl.msrbl.net
-        vote.drbl.caravan.ru
-        vote.drbl.gremlin.ru
-        vote.drbldf.dsbl.ru
-        web.dnsbl.sorbs.net
-        web.rbl.msrbl.net
-        work.drbl.caravan.ru
-        work.drbl.gremlin.ru
-        work.drbldf.dsbl.ru
-        wormrbl.imp.ch
-        xbl.spamhaus.org
-        xs.surbl.org
-        z.mailspike.net"
+    # Common regular expresions
+	REGEX_IP='\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)'
 
     # Colors
     RED=$(tput setaf 1)
@@ -241,12 +254,12 @@
     CLEAR=$(tput sgr0)
 
     # Define spinner
-    #SPINNER="-\|/"
+    SPINNER="-\|/"
     #SPINNER=".oO@*"
     #SPINNER="▉▊▋▌▍▎▏▎▍▌▋▊▉"
     #SPINNER="←↖↑↗→↘↓↙"
     #SPINNER="▁▂▃▄▅▆▇█▇▆▅▄▃▁"
-    SPINNER="▖▘▝▗"
+    #SPINNER="▖▘▝▗"
     #SPINNER="┤┘┴└├┌┬┐"
     #SPINNER="◢◣◤◥"
     #SPINNER="◰◳◲◱"
@@ -261,20 +274,20 @@
 
     # Verbose printing
     VERBOSE=0
-    OUT() {
+    info() {
         if [ $VERBOSE -ge "$1" ]; then
             echo "$2"
         fi
     }
 
     # Error handling
-    ERROR() {
-        echo ERROR: "$1" >&2
+    error() {
+        echo "ERROR: $1" >&2
         exit 2
     }
 
     # Show progres
-    PROGRESS() {
+    progress() {
 
         # Bar
         x=$(($1 % ${#SPINNER} + 1))
@@ -282,97 +295,123 @@
         if test -z "$PLAIN"; then
             printf "\r ";
         fi
+
         # BAR as printf arg so that backslash will be litteraly interpreted
-        printf "[ %s %3s%% ] checking... %4s / $2  " ${BAR} $(($1 * 100 / $2)) "$1";
+        printf "[ %s %3s%% ] checking... %4s / $2  " "$BAR" $(($1 * 100 / $2)) "$1";
     }
 
+    # Resolve the IP
+    resolve() {
+
+		# IP already?
+		IP=$(echo "$1" | grep "^$REGEX_IP$")
+		if [ "$IP" ]; then
+			echo "$IP"
+
+		# Resolve domain
+		else
+			case "$CMD" in
+				$CMD_DIG ) "$CMD" +short -t a +time=$CONF_DNS_DURATION +tries=$CONF_DNS_TRIES "$1" | grep -o "^$REGEX_IP$";;
+				$CMD_HOST ) "$CMD" -t A -W $CONF_DNS_DURATION -R $CONF_DNS_TRIES "$1" | grep -o "$REGEX_IP$";;
+			esac
+		fi
+	}
+
     # Show help
-    HELP() {
-        echo "
-    Usage: blcheck [options] <domain_or_IP>
+    help() {
+		cat <<HELP
+blcheck [options] <domain\_or\_IP>
 
-    Supplied domain must be full quialifined domain name.
-    If the IP is supplied insead the PTR check cannot be executed and will be
-    skipped.
+Supplied domain must be full qualified domain name.
+If the IP is supplied, the PTR check cannot be executed and will be skipped.
 
-    -v    Verbose mode, can be used multiple times (up to -vvv)
-    -q    Quit mode with absolutely no output
-    -p    Plain text output (no coloring, interactive status and so.
-    -h    The help you are just reading
-        ";
+-v          Verbose mode, can be used multiple times (up to -vvv)
+-q          Quiet modem with absolutely no output (useful for scripts)
+-p          Plain text output (no coloring, no interactive status)
+-h          The help you are just reading
+
+Result of the script is the number of blacklisted entries. So if the supplied
+IP is not blacklisted on any of the servers the result is 0.
+
+HELP
         exit;
     }
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
 
-
-# Default values
-HOST=
-PLAIN=
-
 # Parse the params
-while test $# -gt 0; do
-        case "$1" in
-
-        # Verbose
-        -v)   VERBOSE=1; shift;;
-        -vv)  VERBOSE=2; shift;;
-        -vvv) VERBOSE=3; shift;;
-
-        # Quite mode
-        -q)   VERBOSE=-1; shift;;
-        
-        # Plain text output
-        -p)   PLAIN=1 RED= GREEN= YELLOW= CLEAR= ; shift;;
-
-        # Quite mode
-        -h)   HELP; shift;;
-
-        # IP or FCDM
-        *) TARGET=$1; shift;;
+while getopts :vqphl: arg; do
+    case "$arg" in
+        v) VERBOSE=$(( (VERBOSE + 1) % 4));;
+        q) VERBOSE=-1;;
+        p) PLAIN=1 RED="" GREEN="" YELLOW="" CLEAR="" ;;
+        h) help;;
+        ?) error "Unknown option $OPTARG";;
     esac
 done
+shift $((OPTIND - 1))
+
+# Get the domain
+if [ $# -eq 0 ]; then
+    echo "Missing target domain or IP."
+    help
+fi
+TARGET=$1
+
+# Get the command we will use: dig or host
+CMD_DIG=$(which dig)
+CMD_HOST=$(which host)
+if [ "$CMD_DIG" ]; then
+    CMD=$CMD_DIG
+elif [ "$CMD_HOST" ]; then
+    CMD=$CMD_HOST
+fi
+if [ ! "$CMD" ]; then
+	error "Either dig or host command is required."
+fi
+info 3 "Using $CMD to reslove DNS queries"
 
 # Parse IP
-OUT 3 "Using $TARGET for target"
-IP=$(echo "$TARGET" | grep '^[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}$')
+IP=$(resolve "$TARGET")
 if [ ! "$IP" ]; then
-
-    # Try to get the IP
-    OUT 2 "Trying to get the IP for $TARGET"
-    HOST=$TARGET;
-    IP=$(dig +short -t a "$HOST" | grep '^[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}$')
-    if [ ! "$IP" ]; then
-        ERROR "No DNS record found for $TARGET"
-    fi
-    OUT 1 "Using $IP for blacklist lookup"
+	error "No DNS record found for $TARGET"
+elif [ "$IP" != "$TARGET" ]; then
+	DOMAIN=$TARGET
+	info 2 "Using $TARGET for target, resolved to $IP"
+else
+	info 3 "Using $TARGET for target"
 fi
 
 # Reverse the IP
-REVERSED=$(echo "$IP" | sed -ne "s~^\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)$~\4.\3.\2.\1~p")
-OUT 3 "Using $REVERSED for reversed IP"
+REVERSED=$(echo "$IP" | sed -ne "s~^$REGEX_IP$~\4.\3.\2.\1~p")
+info 3 "Using $REVERSED for reversed IP"
 
 # Get the PTR
-OUT 3 "Checking the PTR record"
-PTR=$(dig +short -x "$IP" | sed s/\.$//)
+info 3 "Checking the PTR record"
+case "$CMD" in
+	$CMD_DIG ) PTR=$("$CMD" +short -x "$IP" | sed s/\.$//);;
+	$CMD_HOST ) PTR=$("$CMD" "$IP" | grep -o '[^ ]\+$' | sed s/\.$//)
+esac
+
+# Validate PTR
 if [ ! "$PTR" ]; then
-    OUT 0 "${YELLOW}Warning: PTR lookup failedP${CLEAR}"
+    info 0 "${YELLOW}Warning: PTR lookup failed${CLEAR}"
 
 else
 
     # Match against supplied domain
-    OUT 1 "PTR resolves to $PTR"
-    if [ "$HOST" ]; then
-        if [ "$HOST" != "$PTR" ]; then
-            OUT 0 "${YELLOW}Warning: PTR record does not match supplied domain: $HOST != $PTR${CLEAR}"
+    info 1 "PTR resolves to $PTR"
+    if [ "$DOMAIN" ]; then
+        if [ "$DOMAIN" != "$PTR" ]; then
+            info 0 "${YELLOW}Warning: PTR record does not match supplied domain: $TARGET != $PTR${CLEAR}"
         else
-            OUT 1 "${GREEN}PTR record matches supplied domain $PTR${CLEAR}"
+            info 1 "${GREEN}PTR record matches supplied domain $PTR${CLEAR}"
         fi
     fi
 fi
 
-COUNT=$(($(echo "$BLISTS" | wc -l) - 1))
-OUT 1 "Matching against $COUNT blacklists"
+COUNT=$(($(echo "$CONF_BLACKLISTS" | wc -l) - 1))
+info 1 "Matching against $COUNT blacklists"
 
 # Initialize the counters
 INVALID=0
@@ -381,11 +420,9 @@ FAILED=0
 
 # Interate over all blacklists
 I=0;
-for BL in $BLISTS; do
+for BL in $CONF_BLACKLISTS; do
     PREFIX=
     I=$((I + 1))
-
-    #sleep 1s;
 
     # What should we test
     TEST="${REVERSED}.${BL}."
@@ -411,12 +448,13 @@ for BL in $BLISTS; do
 
     elif [ $VERBOSE -ge 0 ]; then
         if test -z "$PLAIN"; then
-            PROGRESS "$I" "$COUNT"
+            progress "$I" "$COUNT"
         fi
     fi
 
     # Get the status
-    RESPONSE=$(dig +short -t a +time=3 +tries=2 "$TEST" 2>&1 | tr '\n' ' ' | sed 's/ *$//')
+    RESPONSE=$(resolve "$TEST")
+    START=$(echo "$RESPONSE" | cut -c1-4)
 
     # Not blacklisted
     if [ ! "$RESPONSE" ]; then
@@ -429,7 +467,7 @@ for BL in $BLISTS; do
         PASSED=$((PASSED + 1))
 
     # Invalid response
-    elif [ "$RESPONSE" != 127*  ]; then
+    elif [ "$START" != "127."  ]; then
         if [ $VERBOSE -ge 1 ]; then
             if test -z "$PLAIN"; then
                 printf "\r";

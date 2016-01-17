@@ -1,8 +1,8 @@
 # blcheck
 
-A powerfull script for testing a domain or an IP against mailing black lists.
-blcheck-host uses dig if it is found. If not then uses host, if found.
-This wariant works with e.g. FreeBSD base.
+A powerful script for testing a domain or an IP against mailing black lists.  
+Script will use dig if it is found. If dig is not found script will use host.
+
 
 Features
 --------------------
@@ -10,48 +10,39 @@ Features
 * More then __200 black lists__ already included!
 * Automatic distinction between __domain or IP__
 * Performs __PTR validation__ (only if domain is supplied, does not work for IP)
-* The result of script is the number of servers which blacklisted the domain, so it can be used for any kind of __autonomated scripts like cronjobs__
 * 3 verbose (-v) levels and a quiet (-q) mode
+* The result of script is the number of servers which blacklisted the domain, so it can be used for any kind of __automated scripts or cronjobs__
 * Informative and pleasant output
+
 
 Requirements
 --------------------
 
-* Any unix/linux with POSIX shell.
+* Any Unix/Linux with POSIX shell.
+* Either dig or host command available.
 
 
 Usage
 --------------------
 
-#### With root access
-1. Download the script to your /usr/bin folder
-2. Type `chmod +x /usr/bin/blcheck`
-3. Type `blcheck <domain_or_ip>`
-4. Wait for the answer, it might take some time
+blcheck [options] <domain\_or\_IP>
 
+Supplied domain must be full qualified domain name.
+If the IP is supplied, the PTR check cannot be executed and will be skipped.
 
-#### Without root access
-1. Download the script to your system
-2. Type `chmod +x /path/to/blcheck`
-3. Type `/path/to/blcheck <domain_or_ip>`
-4. Wait for the answer, it might take some time
+-v          Verbose mode, can be used multiple times (up to -vvv)  
+-q          Quiet modem with absolutely no output (useful for scripts)  
+-p          Plain text output (no coloring, no interactive status)  
+-h          The help you are just reading  
 
-
-Inapp help
---------------------
-	Usage: blcheck [options] <domain_or_IP>
-
-	Supplied domain must be full quialifined domain name.
-	If the IP is supplied insead the PTR check cannot be executed and will be
-	skipped.
-
-	-v    Verbose mode, can be used multiple times (up to -vvv)
-	-q    Quiet mode with absolutely no output
-	-p    Plain text output (no coloring, no interactive status, no progress)
-	-h    The help you are just reading
+Result of the script is the number of blacklisted entries. So if the supplied
+IP is not blacklisted on any of the servers the result is 0.
 
 
 Credits
 --------------------
-Script has been written by the [Intellex](http://intellex.rs/en) team.
-It is modified by Darko Poljak (https://github.com/darko-poljak).
+Script has been written by the [Intellex](http://intellex.rs/en) team.  
+Contributors:
+	[Darko Poljak](https://github.com/darko-poljak)
+
+
