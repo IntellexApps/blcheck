@@ -348,7 +348,7 @@ for BL in $CONF_BLACKLISTS; do
 
             # It is a proper blacklist
             if [ "$BLACKLISTS" ]; then
-                BLACKLISTS=$(echo "$BLACKLISTS\n$DOMAIN")
+                BLACKLISTS=$(echo -e "$BLACKLISTS\n$DOMAIN")
             else
                 BLACKLISTS="$BL"
             fi
