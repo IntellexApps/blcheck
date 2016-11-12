@@ -357,7 +357,7 @@ for BL in $CONF_BLACKLISTS; do
 done
 
 # Make sure we have at least one blacklist
-COUNT=$(($(echo $BLACKLISTS|wc -w)))
+COUNT=$(($(echo "$BLACKLISTS"|wc -w)))
 if [ ! "$BLACKLISTS" ] || [ "$COUNT" -eq 0 ]; then
     error "No blacklists have been specified"
 fi
