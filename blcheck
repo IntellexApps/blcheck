@@ -348,7 +348,7 @@ for BL in $CONF_BLACKLISTS; do
 
             # It is a proper blacklist
             if [ "$BLACKLISTS" ]; then
-                BLACKLISTS=$(echo -e "$BLACKLISTS\n$DOMAIN")
+                BLACKLISTS="$BLACKLISTS $DOMAIN"
             else
                 BLACKLISTS="$BL"
             fi
@@ -357,7 +357,7 @@ for BL in $CONF_BLACKLISTS; do
 done
 
 # Make sure we have at least one blacklist
-COUNT=$(($(echo "$BLACKLISTS" | wc -l)))
+COUNT=$(($(echo "$BLACKLISTS"|wc -w)))
 if [ ! "$BLACKLISTS" ] || [ "$COUNT" -eq 0 ]; then
     error "No blacklists have been specified"
 fi
@@ -387,7 +387,7 @@ for BL in $BLACKLISTS; do
 
         # Show percentage
         STATUS=$(printf " %3s" $((I * 100 / COUNT)))
-        STATUS="$STATUS%% "
+        STATUS="$STATUS% "
 
         # Show additional info
         if [ $VERBOSE -ge 3 ]; then
@@ -473,4 +473,3 @@ if [ $VERBOSE -ge 0 ]; then
 fi
 
 exit $FAILED;
-
