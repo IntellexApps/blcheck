@@ -152,6 +152,7 @@
     GREEN=$(tput setaf 2)
     YELLOW=$(tput setaf 3)
     CLEAR=$(tput sgr0)
+    DNSSERVER=
 
     # Define spinner
     SPINNER="-\|/"
@@ -218,8 +219,8 @@
             esac
 
             case "$CMD" in
-                $CMD_DIG ) "$CMD" +short -t "$TYPE" +time=$CONF_DNS_DURATION +tries=$CONF_DNS_TRIES "$1" | grep -om 1 "$REGEX";;
-                $CMD_HOST ) "$CMD" -t "$TYPE" -W $CONF_DNS_DURATION -R $CONF_DNS_TRIES "$1" | grep -om 1 "$REGEX";;
+                $CMD_DIG ) "$CMD" $DNSSERVER +short -t "$TYPE" +time=$CONF_DNS_DURATION +tries=$CONF_DNS_TRIES "$1" | grep -om 1 "$REGEX";;
+                $CMD_HOST ) "$CMD" -t "$TYPE" -W $CONF_DNS_DURATION -R $CONF_DNS_TRIES "$1" $DNSSERVER | tail -n1 | grep -om 1 "$REGEX";;
             esac
         fi
     }
@@ -245,6 +246,7 @@ blcheck [options] <domain_or_IP>
 Supplied domain must be full qualified domain name.
 If the IP is supplied, the PTR check cannot be executed and will be skipped.
 
+-d dnshost  Use host as DNS server to make lookups
 -l file     Load blacklists from file, separated by space or new line
 -c          Warn if the top level domain of the blacklist has expired
 -v          Verbose mode, can be used multiple times (up to -vvv)
@@ -262,8 +264,9 @@ HELP
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
 
 # Parse the params
-while getopts :vqphcl: arg; do
+while getopts :vqphcld: arg; do
     case "$arg" in
+        d) DNSSERVER=$OPTARG;;
         l) loadBlacklists $OPTARG;;
         c) VERIFY_BL=TRUE;;
         v) VERBOSE=$(( (VERBOSE + 1) % 4));;
@@ -286,6 +289,7 @@ TARGET=$1
 CMD_DIG=$(which dig)
 CMD_HOST=$(which host)
 if [ "$CMD_DIG" ]; then
+    DNSSERVER="@$DNSSERVER"
     CMD=$CMD_DIG
 elif [ "$CMD_HOST" ]; then
     CMD=$CMD_HOST
@@ -313,8 +317,8 @@ info 3 "Using $REVERSED for reversed IP"
 # Get the PTR
 info 3 "Checking the PTR record"
 case "$CMD" in
-    $CMD_DIG ) PTR=$("$CMD" +short -x "$IP" | sed s/\.$//);;
-    $CMD_HOST ) PTR=$("$CMD" "$IP" | grep -o '[^ ]\+$' | sed s/\.$//)
+    $CMD_DIG ) PTR=$("$CMD" $DNSSERVER +short -x "$IP" | sed s/\.$//);;
+    $CMD_HOST ) PTR=$("$CMD" "$IP" $DNSSERVER | tail -n1 | grep -o '[^ ]\+$' | sed s/\.$//)
 esac
 
 # Validate PTR
