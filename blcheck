@@ -289,7 +289,9 @@ TARGET=$1
 CMD_DIG=$(which dig)
 CMD_HOST=$(which host)
 if [ "$CMD_DIG" ]; then
-    DNSSERVER="@$DNSSERVER"
+    if [[ $DNSSERVER ]]; then
+        DNSSERVER="@$DNSSERVER"
+    fi
     CMD=$CMD_DIG
 elif [ "$CMD_HOST" ]; then
     CMD=$CMD_HOST
