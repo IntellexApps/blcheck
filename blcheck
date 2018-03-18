@@ -238,7 +238,7 @@
     }
 
     # Show help
-    help() {
+    showHelp() {
         cat <<HELP
 blcheck [options] <domain_or_IP>
 
@@ -269,7 +269,7 @@ while getopts :vqphcl: arg; do
         v) VERBOSE=$(( (VERBOSE + 1) % 4));;
         q) VERBOSE=-1;;
         p) PLAIN=1 RED="" GREEN="" YELLOW="" CLEAR="" ;;
-        h) help;;
+        h) showHelp;;
         ?) error "Unknown option $OPTARG";;
     esac
 done
@@ -278,7 +278,7 @@ shift $((OPTIND - 1))
 # Get the domain
 if [ $# -eq 0 ]; then
     echo "Missing target domain or IP."
-    help
+    showHelp
 fi
 TARGET=$1
 
