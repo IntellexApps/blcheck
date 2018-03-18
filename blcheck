@@ -142,7 +142,7 @@
 
 # Definitions {
 
-    # Common regular expresions
+    # Common regular expressions
     REGEX_IP='\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)'
     REGEX_DOMAIN='\([a-zA-Z0-9]\+\(-[a-zA-Z0-9]\+\)*\.\)\+[a-zA-Z]\{2,\}'
     REGEX_TDL='\([a-zA-Z0-9]\+\(-[a-zA-Z0-9]\+\)*\.\)[a-zA-Z]\{2,\}$'
@@ -186,7 +186,7 @@
         exit 2
     }
 
-    # Show progres
+    # Show progress
     progress() {
 
         # Bar
