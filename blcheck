@@ -307,6 +307,10 @@ if [ $# -eq 0 ]; then
 fi
 TARGET=$1
 
+# Some shells disable parsing backslash in echo statements by default
+# Set the flag to enable echo to behave consistently across platforms
+shopt -s xpg_echo
+
 # Get the command we will use: dig or host
 CMD_DIG=$(which dig)
 CMD_HOST=$(which host)
