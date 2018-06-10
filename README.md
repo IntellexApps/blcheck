@@ -30,6 +30,7 @@ blcheck [options] <domain\_or\_IP>
 Supplied domain must be full qualified domain name.  
 If the IP is supplied, the PTR check cannot be executed and will be skipped.
 
+-d dnshost  Use host as DNS server to make lookups  
 -l file     Load blacklists from file, separated by space or new line  
 -c          Warn if the top level domain of the blacklist has expired  
 -v          Verbose mode, can be used multiple times (up to -vvv)  
