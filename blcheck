@@ -173,11 +173,18 @@
     REGEX_TDL='\([a-zA-Z0-9]\+\(-[a-zA-Z0-9]\+\)*\.\)[a-zA-Z]\{2,\}$'
 
     # Colors
-    RED=$(tput setaf 1)
-    GREEN=$(tput setaf 2)
-    YELLOW=$(tput setaf 3)
-    CLEAR=$(tput sgr0)
-
+    if [[ $- == *i* ]]; then
+        RED=$(tput setaf 1)
+        GREEN=$(tput setaf 2)
+        YELLOW=$(tput setaf 3)
+        CLEAR=$(tput sgr0)
+    else
+        RED=$(tput -T xterm setaf 1)
+        GREEN=$(tput -T xterm setaf 2)
+        YELLOW=$(tput -T xterm setaf 3)
+        CLEAR=$(tput -T xterm sgr0)
+    fi
+    
     # Define spinner
     SPINNER="-\|/"
     #SPINNER=".oO@*"
