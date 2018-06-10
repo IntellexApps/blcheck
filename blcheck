@@ -29,7 +29,7 @@
 # author            : Intellex
 # contributors      : Darko Poljak
 # date              : 2016-03-18
-# version           : 0.5.1
+# version           : 0.6.0
 # usage             : blcheck [options] <domain_or_ip>
 #
 # =============================================================================
@@ -184,7 +184,7 @@
         YELLOW=$(tput -T xterm setaf 3)
         CLEAR=$(tput -T xterm sgr0)
     fi
-    
+
     # Define spinner
     SPINNER="-\|/"
     #SPINNER=".oO@*"

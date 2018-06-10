@@ -1,6 +1,6 @@
 # blcheck
 
-A powerful script for testing a domain or an IP against mailing black lists.  
+A powerful script for testing a domain or an IP against mailing black lists.
 Script will use dig if it is found. If dig is not found script will use host.
 
 
@@ -27,16 +27,16 @@ Usage
 
 blcheck [options] <domain\_or\_IP>
 
-Supplied domain must be full qualified domain name.  
+Supplied domain must be full qualified domain name.
 If the IP is supplied, the PTR check cannot be executed and will be skipped.
 
--d dnshost  Use host as DNS server to make lookups  
--l file     Load blacklists from file, separated by space or new line  
--c          Warn if the top level domain of the blacklist has expired  
--v          Verbose mode, can be used multiple times (up to -vvv)  
--q          Quiet modem with absolutely no output (useful for scripts)  
--p          Plain text output (no coloring, no interactive status)  
--h          The help you are just reading  
+-d dnshost  Use host as DNS server to make lookups
+-l file     Load blacklists from file, separated by space or new line
+-c          Warn if the top level domain of the blacklist has expired
+-v          Verbose mode, can be used multiple times (up to -vvv)
+-q          Quiet modem with absolutely no output (useful for scripts)
+-p          Plain text output (no coloring, no interactive status)
+-h          The help you are just reading
 
 Result of the script is the number of blacklisted entries. So if the supplied
 IP is not blacklisted on any of the servers the result is 0.
@@ -50,7 +50,7 @@ Licence
 --------------------
 MIT License
 
-Copyright (c) 2015 Intellex
+Copyright (c) 2018 Intellex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ SOFTWARE.
 
 Credits
 --------------------
-Script has been written by the [Intellex](http://intellex.rs/en) team.  
+Script has been written by the [Intellex](http://intellex.rs/en) team.
 Contributors:
 	[Darko Poljak](https://github.com/darko-poljak)
 
