@@ -295,7 +295,7 @@ HELP
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
 
 # Parse the params
-while getopts :vqphcld: arg; do
+while getopts :vqphcl:d: arg; do
     case "$arg" in
         d) DNSSERVER=$OPTARG;;
         l) loadBlacklists $OPTARG;;
