@@ -28,9 +28,10 @@
 # description       : Test any domain against more then 100 black lists.
 # author            : Intellex
 # contributors      : Darko Poljak
-# date              : 2016-03-18
+# date              : 2020-01-23
 # version           : 0.6.0
 # usage             : blcheck [options] <domain_or_ip>
+# reference         : http://multirbl.valli.org/list/
 #
 # =============================================================================
 
@@ -43,124 +44,353 @@
 
     # Blacklists to check
     CONF_BLACKLISTS="
-        0spam-killlist.fusionzero.com
-        0spam.fusionzero.com
-        access.redhawk.org
-        all.rbl.jp
-        all.spam-rbl.fr
-        all.spamrats.com
-        aspews.ext.sorbs.net
-        b.barracudacentral.org
-        backscatter.spameatingmonkey.net
-        badnets.spameatingmonkey.net
-        bb.barracudacentral.org
-        bl.drmx.org
-        bl.konstant.no
-        bl.nszones.com
-        bl.spamcannibal.org
-        bl.spameatingmonkey.net
-        bl.spamstinks.com
-        black.junkemailfilter.com
-        blackholes.five-ten-sg.com
-        blacklist.sci.kun.nl
+        whitelist.rbl.ispa.at
+        t3direct.dnsbl.net.au
+        ucepn.dnsbl.net.au
+        wpbl.dnsbl.net.au
+        bl.reynolds.net.au
+        bl.mav.com.br
+        openproxy.bls.digibase.ca
+        proxyabuse.bls.digibase.ca
+        spambot.bls.digibase.ca
+        probes.dnsbl.net.auproxy.bl.gweep.ca
+        rbl2.triumf.ca
+        wbl.triumf.ca
+        ipbl.zeustracker.abuse.ch
+        uribl.zeustracker.abuse.ch
+        spamrbl.imp.ch
+        wormrbl.imp.ch
+        rbl.lugh.ch
+        dnsrbl.swinog.ch
+        uribl.swinog.ch
         blacklist.woody.ch
+        ipv6.blacklist.woody.ch
+        uri.blacklist.woody.ch
+        block.ascams.com
+        superblock.ascams.com
+        rbl.blockedservers.com
+        netscan.rbl.blockedservers.com
+        spam.rbl.blockedservers.com
+        list.blogspambl.com
+        dnsbl1.dnsbl.borderware.com
+        dnsbl2.dnsbl.borderware.com
+        dnsbl3.dnsbl.borderware.com
+        dul.dnsbl.borderware.com
+        csi.cloudmark.com
+        dnsbl.cobion.com
         bogons.cymru.com
-        bsb.empty.us
-        bsb.spamlookup.net
-        cart00ney.surriel.com
-        cbl.abuseat.org
-        cbl.anti-spam.org.cn
-        cblless.anti-spam.org.cn
-        cblplus.anti-spam.org.cn
-        cdl.anti-spam.org.cn
+        v4.fullbogons.cymru.com
+        v6.fullbogons.cymru.com
+        rbl.dns-servicios.com
+        0outspam.fusionzero.com
+        0spam.fusionzero.com
+        0spam-n.fusionzero.com
+        0spamtrust.fusionzero.com
+        0spamurl.fusionzero.com
+        accredit.habeas.com
+        hil.habeas.com
+        hul.habeas.com
+        sa-accredit.habeas.com
+        sohul.habeas.com
+        blacklist.hostkarma.com
+        iadb.isipp.com
+        iadb2.isipp.com
+        iddb.isipp.com
+        wadb.isipp.com
+        black.junkemailfilter.com
+        hostkarma.junkemailfilter.com
+        nobl.junkemailfilter.com
+        krn.korumail.com
+        q.mail-abuse.com
+        r.mail-abuse.com
         cidr.bl.mcafee.com
-        combined.rbl.msrbl.net
+        dnsbl.forefront.microsoft.com
+        bl.mipspace.com
+        bl.nordspam.com
+        dbl.nordspam.com
+        bl.nszones.com
+        dyn.nszones.com
+        sbl.nszones.com
+        ubl.nszones.com
+        wl.nszones.com
+        safe.dnsbl.prs.proofpoint.com
+        rbl.realtimeblacklist.com
+        mailsl.dnsbl.rjek.com
+        urlsl.dnsbl.rjek.com
+        dynip.rothen.com
+        blackholes.scconsult.com
+        reputation-domain.rbl.scrolloutf1.com
+        reputation-ip.rbl.scrolloutf1.com
+        reputation-ns.rbl.scrolloutf1.com
+        score.senderscore.com
+        bl.score.senderscore.com
+        feb.spamlab.com
+        rbl.spamlab.com
+        all.spamrats.com
+        auth.spamrats.com
+        dyna.spamrats.com
+        noptr.spamrats.com
+        spam.spamrats.com
+        rbl.suresupport.com
+        psbl.surriel.com
+        whitelist.surriel.com
+        bl.tiopan.com
+        dbl.tiopan.com
+        ubl.unsubscore.com
+        black.uribl.com
+        grey.uribl.com
+        multi.uribl.com
+        red.uribl.com
+        white.uribl.com
+        spam.dnsbl.anonmails.de
+        bl.blocklist.de
+        dnsbl.darklist.de
+        dnsbl.inps.de
+        dnswl.inps.de
+        admin.bl.kundenserver.de
+        relays.bl.kundenserver.de
+        schizo-bl.kundenserver.de
+        spamblock.kundenserver.de
+        worms-bl.kundenserver.de
+        dnsbl.madavi.de
+        torserver.tor.dnsbl.sectoor.de
+        dunk.dnsbl.tuxad.de
+        hartkore.dnsbl.tuxad.de
+        spamsources.fabel.dk
+        st.technovision.dk
+        dnsbl.abyan.es
+        eswlrev.dnsbl.rediris.es
+        mtawlrev.dnsbl.rediris.es
+        dnsbl.isx.fr
+        all.spam-rbl.fr
+        pofon.foobar.hu
+        ispmx.pofon.foobar.hu
+        uribl.pofon.foobar.hu
+        singular.ttk.pte.hu
+        blacklist.netcore.co.in
+        dnsbl.rv-soft.info
+        nana.bl.techtheft.info
+        other.bl.techtheft.info
+        robot.bl.techtheft.info
+        scanning.bl.techtheft.info
+        source.bl.techtheft.info
+        support.bl.techtheft.info
+        virus.bl.techtheft.info
+        watchlist.bl.techtheft.info
         db.wpbl.info
-        dev.null.dk
-        dialups.visi.com
+        rbl.jp
+        spamlist.or.kr
+        bl.fmb.la
+        communicado.fmb.la
+        nsbl.fmb.la
+        sa.fmb.la
+        short.fmb.la
+        contacts.abuse.net
+        dnsbl.anticaptcha.net
+        dnsbl6.anticaptcha.net
+        blacklist.mail.ops.asp.att.net
+        blacklist.sequoia.ops.asp.att.net
+        blacklist.mailrelay.att.net
+        rbl.blakjak.net
+        dul.blackhole.cantv.net
+        hog.blackhole.cantv.net
+        rhsbl.blackhole.cantv.net
+        rot.blackhole.cantv.net
+        spam.blackhole.cantv.net
+        rbl.choon.net
+        ipv6.rbl.choon.net
+        rwl.choon.net
+        ipv6.rwl.choon.net
+        dnsbl.cyberlogic.net
+        fnrbl.fast.net
+        truncate.gbudb.net
+        rbl.interserver.net
+        rbl.iprange.net
+        dnsbl.kempt.net
+        spamguard.leadmon.net
+        niprbl.mailcleaner.net
+        uribl.mailcleaner.net
+        dnsbl.mailshell.net
+        bl.mailspike.net
+        rep.mailspike.net
+        wl.mailspike.net
+        z.mailspike.net
+        ix.dnsbl.manitu.net
+        combined.rbl.msrbl.net
+        images.rbl.msrbl.net
+        phishing.rbl.msrbl.net
+        spam.rbl.msrbl.net
+        virus.rbl.msrbl.net
+        web.rbl.msrbl.net
+        relays.nether.net
+        trusted.nether.net
+        unsure.nether.net
+        dul.pacifier.net
+        all.s5h.net
+        bl.scientificspam.net
+        rhsbl.scientificspam.net
+        korea.services.net
+        dnsbl.sorbs.net
+        block.dnsbl.sorbs.net
+        exitnodes.tor.dnsbl.sectoor.dehttp.dnsbl.sorbs.net
+        dul.dnsbl.sorbs.net
+        escalations.dnsbl.sorbs.net
+        http.dnsbl.sorbs.net
+        misc.dnsbl.sorbs.net
+        new.dnsbl.sorbs.net
+        noservers.dnsbl.sorbs.net
+        old.dnsbl.sorbs.net
+        problems.dnsbl.sorbs.net
+        proxies.dnsbl.sorbs.net
+        recent.dnsbl.sorbs.net
+        relays.dnsbl.sorbs.net
+        safe.dnsbl.sorbs.net
+        smtp.dnsbl.sorbs.net
+        socks.dnsbl.sorbs.net
+        spam.dnsbl.sorbs.net
+        new.spam.dnsbl.sorbs.net
+        old.spam.dnsbl.sorbs.net
+        recent.spam.dnsbl.sorbs.net
+        web.dnsbl.sorbs.net
+        zombie.dnsbl.sorbs.net
+        aspews.ext.sorbs.net
+        l1.bbfh.ext.sorbs.net
+        l2.bbfh.ext.sorbs.net
+        l3.bbfh.ext.sorbs.net
+        l4.bbfh.ext.sorbs.net
+        rhsbl.sorbs.net
+        badconf.rhsbl.sorbs.net
+        nomail.rhsbl.sorbs.net
+        bl.spamcop.net
+        backscatter.spameatingmonkey.net
+        bl.spameatingmonkey.net
+        fresh.spameatingmonkey.net
+        fresh10.spameatingmonkey.net
+        fresh15.spameatingmonkey.net
+        fresh30.spameatingmonkey.net
+        freshzero.spameatingmonkey.net
+        bl.ipv6.spameatingmonkey.net
+        netbl.spameatingmonkey.net
+        uribl.spameatingmonkey.net
+        urired.spameatingmonkey.net
+        bsb.spamlookup.net
+        dnsbl.spfbl.net
+        dnswl.spfbl.net
+        score.spfbl.net
+        bl.suomispam.net
+        dbl.suomispam.net
+        gl.suomispam.net
+        dob.sibl.support-intelligence.net
+        srn.surgate.net
+        srnblack.surgate.net
+        rbl.tdk.net
         dnsbl-0.uceprotect.net
         dnsbl-1.uceprotect.net
         dnsbl-2.uceprotect.net
         dnsbl-3.uceprotect.net
-        dnsbl.anticaptcha.net
-        dnsbl.aspnet.hu
-        dnsbl.inps.de
-        dnsbl.justspam.org
-        dnsbl.kempt.net
-        dnsbl.madavi.de
-        dnsbl.rizon.net
-        dnsbl.rv-soft.info
-        dnsbl.rymsho.ru
-        dnsbl.sorbs.net
+        all.rbl.webiron.net
+        babl.rbl.webiron.net
+        cabl.rbl.webiron.net
+        crawler.rbl.webiron.net
+        stabl.rbl.webiron.net
         dnsbl.zapbl.net
-        dnsrbl.swinog.ch
-        dul.pacifier.net
-        dyn.nszones.com
-        dyna.spamrats.com
-        fnrbl.fast.net
-        fresh.spameatingmonkey.net
-        hostkarma.junkemailfilter.com
-        images.rbl.msrbl.net
-        ips.backscatterer.org
-        ix.dnsbl.manitu.net
-        korea.services.net
-        l2.bbfh.ext.sorbs.net
-        l3.bbfh.ext.sorbs.net
-        l4.bbfh.ext.sorbs.net
-        list.bbfh.org
-        list.blogspambl.com
-        mail-abuse.blacklist.jippg.org
-        netbl.spameatingmonkey.net
-        netscan.rbl.blockedservers.com
-        no-more-funn.moensted.dk
-        noptr.spamrats.com
+        rhsbl.zapbl.net
+        rbl.zenon.net
+        dnsbl.beetjevreemd.nl
+        bitonly.dnsbl.bit.nl
+        virbl.bit.nl
+        blacklist.sci.kun.nl
+        whitelist.sci.kun.nl
+        blackholes.tepucom.nl
+        bl.konstant.no
+        bl.0spam.org
+        nbl.0spam.org
+        url.0spam.org
+        cbl.abuseat.org
         orvedb.aupads.org
-        pbl.spamhaus.org
-        phishing.rbl.msrbl.net
-        pofon.foobar.hu
-        psbl.surriel.com
-        rbl.abuse.ro
-        rbl.blockedservers.com
-        rbl.dns-servicios.com
-        rbl.efnet.org
-        rbl.efnetrbl.org
-        rbl.iprange.net
-        rbl.schulte.org
-        rbl.talkactive.net
-        rbl2.triumf.ca
         rsbl.aupads.org
-        sbl-xbl.spamhaus.org
-        sbl.nszones.com
-        sbl.spamhaus.org
-        short.rbl.jp
-        spam.dnsbl.anonmails.de
-        spam.pedantic.org
-        spam.rbl.blockedservers.com
-        spam.rbl.msrbl.net
-        spam.spamrats.com
-        spamrbl.imp.ch
-        spamsources.fabel.dk
-        st.technovision.dk
-        tor.dan.me.uk
-        tor.dnsbl.sectoor.de
+        ips.backscatterer.org
+        b.barracudacentral.org
+        bb.barracudacentral.org
+        list.bbfh.org
+        plus.bondedsender.org
+        query.bondedsender.org
+        dnsblchile.org
+        dnsrbl.org
+        dwl.dnswl.org
+        list.dnswl.org
+        bl.drmx.org
+        dnsbl.dronebl.org
+        rbl.efnet.org
         tor.efnet.org
-        torexit.dan.me.uk
-        truncate.gbudb.net
-        ubl.unsubscore.com
-        uribl.spameatingmonkey.net
-        urired.spameatingmonkey.net
-        virbl.dnsbl.bit.nl
-        virus.rbl.jp
-        virus.rbl.msrbl.net
-        vote.drbl.caravan.ru
-        vote.drbl.gremlin.ru
-        web.rbl.msrbl.net
-        work.drbl.caravan.ru
-        work.drbl.gremlin.ru
-        wormrbl.imp.ch
+        rbl.efnetrbl.org
+        dnsbl.rangers.eu.org
+        dnsbl.httpbl.org
+        mail-abuse.blacklist.jippg.org
+        dnsbl.justspam.org
+        bl.mailspike.org
+        bl.nosolicitado.org
+        bl.worst.nosolicitado.org
+        dnsbl.openresolvers.org
+        spam.pedantic.org
+        access.redhawk.org
+        abuse.rfc-clueless.org
+        bogusmx.rfc-clueless.org
+        dsn.rfc-clueless.org
+        elitist.rfc-clueless.org
+        fulldom.rfc-clueless.org
+        postmaster.rfc-clueless.org
+        whois.rfc-clueless.org
+        public.sarbl.org
+        rbl.schulte.org
+        sbl.spamdown.org
+        dbl.spamhaus.org
+        vouch.dwl.spamhaus.org
+        pbl.spamhaus.org
+        sbl.spamhaus.org
+        sbl-xbl.spamhaus.org
+        swl.spamhaus.org
         xbl.spamhaus.org
-        zen.spamhaus.org"
+        zen.spamhaus.org
+        abuse.surbl.org
+        cr.surbl.org
+        multi.surbl.org
+        mw.surbl.org
+        dnsbl.tornevall.org
+        opm.tornevall.org
+        free.v4bl.org
+        ip.v4bl.org
+        ips.whitelisted.org
+        dnsbl.calivent.com.pe
+        forbidden.icm.edu.pl
+        dyn.rbl.polspam.pl
+        lblip4.rbl.polspam.pl
+        lblip6.rbl.polspam.pl
+        rblip4.rbl.polspam.pl
+        rblip6.rbl.polspam.pl
+        rhsbl.rbl.polspam.pl
+        rbl.abuse.ro
+        uribl.abuse.ro
+        vote.drbl.caravan.ru
+        work.drbl.caravan.ru
+        vote.drbl.gremlin.ru
+        work.drbl.gremlin.ru
+        dul.dnsbl.sorbs.netdul.ru
+        bl.shlink.orgdul.ru
+        rbl.rbldns.ru
+        dnsbl.rymsho.ru
+        rhsbl.rymsho.ru
+        netblockbl.spamgrouper.to
+        dnsbl.mcu.edu.tw
+        dnsbl.net.ua
+        rbl.fasthosts.co.uk
+        torexit.dan.me.uk
+        bsb.empty.us
+        88.blocklist.zap"
 
+        # the following blacklists only take domain names (not IPs)
+        # no solution to that, yet
+        # dbl.spamhaus.org
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
 
@@ -256,6 +486,25 @@
         fi
     }
 
+    # Result info for IP
+    text() {
+
+        # IP already?
+        IP=$(echo "$1" | grep "^$REGEX_IP$")
+        if [ "$IP" ]; then
+            echo "$IP"
+
+        # Resolve domain
+        else
+
+            TYPE="txt"
+            case "$CMD" in
+                $CMD_DIG ) "$CMD" $DNSSERVER +short -t "$TYPE" +time=$CONF_DNS_DURATION +tries=$CONF_DNS_TRIES "$1" ;;
+                $CMD_HOST ) "$CMD" -t "$TYPE" -W $CONF_DNS_DURATION -R $CONF_DNS_TRIES "$1" $DNSSERVER | tail -n1 ;;
+            esac
+        fi
+    }
+
     # Load the blacklist from file
     loadBlacklists() {
 
@@ -281,7 +530,7 @@ If the IP is supplied, the PTR check cannot be executed and will be skipped.
 -l file     Load blacklists from file, separated by space or new line
 -c          Warn if the top level domain of the blacklist has expired
 -v          Verbose mode, can be used multiple times (up to -vvv)
--q          Quiet modem with absolutely no output (useful for scripts)
+-q          Quiet mode with absolutely no output (useful for scripts)
 -p          Plain text output (no coloring, no interactive status)
 -h          The help you are just reading
 
@@ -480,6 +729,7 @@ for BL in $BLACKLISTS; do
         if [ $VERBOSE -ge 1 ]; then
             if test -z "$PLAIN"; then printf "\r"; fi
             printf "%s%sinvalid response (%s)%s\n" "$YELLOW" "$PREFIX" "$RESPONSE" "$CLEAR";
+            printf "%s%${#PREFIX}s%s%s\n" "$YELLOW" "TXT: " "$(text "${TEST}")" "$CLEAR";
         fi;
         INVALID=$((INVALID + 1))
 
@@ -488,6 +738,7 @@ for BL in $BLACKLISTS; do
         if [ $VERBOSE -ge 1 ]; then
             if test -z "$PLAIN"; then printf "\r"; fi
             printf "%s%sblacklisted (%s)%s\n" "$RED" "$PREFIX" "$RESPONSE" "$CLEAR";
+            printf "%s%${#PREFIX}s%s%s\n" "$RED" "TXT: " "$(text "${TEST}")" "$CLEAR";
         elif [ $VERBOSE -ge 0 ]; then
             if test -z "$PLAIN"; then printf "\r                                                          "; printf "\r"; fi
             printf "%s%s%s : %s\n" "$RED" "$BL" "$CLEAR" "$RESPONSE"
@@ -514,4 +765,3 @@ if [ $VERBOSE -ge 0 ]; then
 fi
 
 exit $FAILED;
-
