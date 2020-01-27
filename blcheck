@@ -44,7 +44,6 @@
 
     # Blacklists to check
     CONF_BLACKLISTS="
-        whitelist.rbl.ispa.at
         t3direct.dnsbl.net.au
         ucepn.dnsbl.net.au
         wpbl.dnsbl.net.au
@@ -55,7 +54,6 @@
         spambot.bls.digibase.ca
         probes.dnsbl.net.auproxy.bl.gweep.ca
         rbl2.triumf.ca
-        wbl.triumf.ca
         ipbl.zeustracker.abuse.ch
         uribl.zeustracker.abuse.ch
         spamrbl.imp.ch
@@ -107,12 +105,10 @@
         dnsbl.forefront.microsoft.com
         bl.mipspace.com
         bl.nordspam.com
-        dbl.nordspam.com
         bl.nszones.com
         dyn.nszones.com
         sbl.nszones.com
         ubl.nszones.com
-        wl.nszones.com
         safe.dnsbl.prs.proofpoint.com
         rbl.realtimeblacklist.com
         mailsl.dnsbl.rjek.com
@@ -122,7 +118,6 @@
         reputation-domain.rbl.scrolloutf1.com
         reputation-ip.rbl.scrolloutf1.com
         reputation-ns.rbl.scrolloutf1.com
-        score.senderscore.com
         bl.score.senderscore.com
         feb.spamlab.com
         rbl.spamlab.com
@@ -133,20 +128,16 @@
         spam.spamrats.com
         rbl.suresupport.com
         psbl.surriel.com
-        whitelist.surriel.com
         bl.tiopan.com
-        dbl.tiopan.com
         ubl.unsubscore.com
         black.uribl.com
         grey.uribl.com
         multi.uribl.com
         red.uribl.com
-        white.uribl.com
         spam.dnsbl.anonmails.de
         bl.blocklist.de
         dnsbl.darklist.de
         dnsbl.inps.de
-        dnswl.inps.de
         admin.bl.kundenserver.de
         relays.bl.kundenserver.de
         schizo-bl.kundenserver.de
@@ -159,8 +150,6 @@
         spamsources.fabel.dk
         st.technovision.dk
         dnsbl.abyan.es
-        eswlrev.dnsbl.rediris.es
-        mtawlrev.dnsbl.rediris.es
         dnsbl.isx.fr
         all.spam-rbl.fr
         pofon.foobar.hu
@@ -213,7 +202,6 @@
         dnsbl.mailshell.net
         bl.mailspike.net
         rep.mailspike.net
-        wl.mailspike.net
         z.mailspike.net
         ix.dnsbl.manitu.net
         combined.rbl.msrbl.net
@@ -275,10 +263,8 @@
         urired.spameatingmonkey.net
         bsb.spamlookup.net
         dnsbl.spfbl.net
-        dnswl.spfbl.net
         score.spfbl.net
         bl.suomispam.net
-        dbl.suomispam.net
         gl.suomispam.net
         dob.sibl.support-intelligence.net
         srn.surgate.net
@@ -300,7 +286,6 @@
         bitonly.dnsbl.bit.nl
         virbl.bit.nl
         blacklist.sci.kun.nl
-        whitelist.sci.kun.nl
         blackholes.tepucom.nl
         bl.konstant.no
         bl.0spam.org
@@ -317,8 +302,6 @@
         query.bondedsender.org
         dnsblchile.org
         dnsrbl.org
-        dwl.dnswl.org
-        list.dnswl.org
         bl.drmx.org
         dnsbl.dronebl.org
         rbl.efnet.org
@@ -344,12 +327,9 @@
         public.sarbl.org
         rbl.schulte.org
         sbl.spamdown.org
-        dbl.spamhaus.org
-        vouch.dwl.spamhaus.org
         pbl.spamhaus.org
         sbl.spamhaus.org
         sbl-xbl.spamhaus.org
-        swl.spamhaus.org
         xbl.spamhaus.org
         zen.spamhaus.org
         abuse.surbl.org
@@ -360,7 +340,6 @@
         opm.tornevall.org
         free.v4bl.org
         ip.v4bl.org
-        ips.whitelisted.org
         dnsbl.calivent.com.pe
         forbidden.icm.edu.pl
         dyn.rbl.polspam.pl
@@ -390,7 +369,34 @@
 
         # the following blacklists only take domain names (not IPs)
         # no solution to that, yet
-        # dbl.spamhaus.org
+    CONF_DOMAINLISTS="
+        dbl.nordspam.com
+        dbl.tiopan.com
+        dbl.suomispam.net
+        dbl.spamhaus.org"
+
+        # reputation/scoring pages
+        # score.senderscore.com
+
+        # whitelists
+    CONF_WHITELISTS="
+        dwl.dnswl.org
+        list.dnswl.org
+        vouch.dwl.spamhaus.org
+        swl.spamhaus.org
+        wl.mailspike.net
+        eswlrev.dnsbl.rediris.es
+        mtawlrev.dnsbl.rediris.es
+        wbl.triumf.ca
+        whitelist.rbl.ispa.at
+        whitelist.surriel.com
+        white.uribl.com
+        whitelist.sci.kun.nl
+        ips.whitelisted.org
+        wl.nszones.com
+        dnswl.inps.de
+        dnswl.spfbl.net
+        "
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ }
 
