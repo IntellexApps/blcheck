@@ -562,6 +562,19 @@ if [[ $# -eq 0 ]]; then
 fi
 TARGET=$1
 
+if [ ! $(which parallel 2> /dev/null) ]; then
+	echo "Parallel missing, trying to install..."
+	[ ! "$(yum -q provides parallel)" ] && yum -y -q install epel-release
+	yum -y -q install parallel
+	if [ "$(which parallel 2> /dev/null)" ]; then
+		mkdir ~/.parallel
+		touch ~/.parallel/will-cite
+	else
+		echo "Failed to install parallel, exiting."
+		exit 1
+	fi
+fi
+
 # Some shells disable parsing backslash in echo statements by default
 # Set the flag to enable echo to behave consistently across platforms
 shopt -s xpg_echo
@@ -685,48 +698,44 @@ info 1 "  - ${COUNT_DNSBL} DNS blacklists"
 info 1 "  - ${COUNT_DNSWL} DNS whitelists"
 info 1 "  - ${COUNT_URIBL} URI blacklists"
 
-# Initialize the counters
-INVALID=0
-PASSED=0
-FAILED=0
-WHITE=0
-
 # Iterate over all blacklists
-I=0;
-for BL in ${BLACKLISTS}; do
-    PREFIX=
-    I=$((I + 1))
+
+parallel_check() {
+    local PREFIX=
+    local I=$1
+    local BL=$2
 
     # Parse list entry
     if [[ ! ${BL} =~ ${REGEX_LIST} ]]; then
         error "List entry ${BL} broken"
+    else
+        local DOMAIN="${BASH_REMATCH[1]}"
+        local FILTER="${BASH_REMATCH[3]}"
+        local TYPE="${BASH_REMATCH[6]}"
     fi
-    DOMAIN="${BASH_REMATCH[1]}"
-    FILTER="${BASH_REMATCH[3]}"
-    TYPE="${BASH_REMATCH[6]}"
 
 
 
     # What should we test
     if [[ "${TYPE}" != "URIBL" ]]; then
         # IP based test
-        TEST="${REVERSED}.${DOMAIN}."
+        local TEST="${REVERSED}.${DOMAIN}."
     else
         # Domain name based test (URI)
-        TEST="${TARGET}.${DOMAIN}."
+        local TEST="${TARGET}.${DOMAIN}."
     fi
 
 
     # Make sure the info is shown if we are checking the servers
     if [[ "${VERIFY_BL}" && "${VERBOSE}" -lt 1 ]]; then
-        VERBOSE=1
+        local VERBOSE=1
     fi
 
     # For verbose output
     if [[ "${VERBOSE}" -ge 1 ]]; then
 
         # Show percentage
-        STATUS=$(printf " %3s" $((I * 100 / COUNT)))
+        local STATUS=$(printf " %3s" $((I * 100 / COUNT)))
         STATUS="${STATUS}% "
 
         # Show additional info
@@ -748,19 +757,19 @@ for BL in ${BLACKLISTS}; do
     fi
 
     # Get the status
-    RESPONSE=$(resolve "${TEST}")
+    local RESPONSE=$(resolve "${TEST}")
 
     # Not blacklisted
     if [[ -z "${RESPONSE}" ]]; then
 
         # Make sure the server is viable
-        ERROR=""
+        local ERROR=""
         if [[ "${VERIFY_BL}" ]]; then
-            TDL=$(echo "${DOMAIN}" | grep -om 1 '\([a-zA-Z0-9]\+\(-[a-zA-Z0-9]\+\)*\.\)[a-zA-Z]\{2,\}$')
+            local TDL=$(echo "${DOMAIN}" | grep -om 1 '\([a-zA-Z0-9]\+\(-[a-zA-Z0-9]\+\)*\.\)[a-zA-Z]\{2,\}$')
             if [[ ! "$(resolve "${TDL}" ns)" ]]; then
                 if [[ -z "${PLAIN}" ]]; then printf "\r"; fi
                 printf "%s%sUnreachable server%s\n" "${YELLOW}" "${PREFIX}" "${CLEAR}";
-                INVALID=$((INVALID + 1))
+                echo "$BL" >> $invalid_file
                 ERROR=TRUE
             fi
         fi
@@ -770,7 +779,7 @@ for BL in ${BLACKLISTS}; do
                 if [[ -z "${PLAIN}" ]]; then printf "\r"; fi
                 printf "%s%s✓%s\n" "${CLEAR}" "${PREFIX}" "${CLEAR}";
             fi
-            PASSED=$((PASSED + 1))
+            echo "$BL" >> $passed_file
         fi;
 
     # Invalid response
@@ -793,7 +802,7 @@ for BL in ${BLACKLISTS}; do
                 if [[ -z "${PLAIN}" ]]; then printf "\r                                                          "; printf "\r"; fi
                 printf "%s%s%s : %s\n" "${RED}" "${DOMAIN}" "${CLEAR}" "${RESPONSE}"
             fi
-            FAILED=$((FAILED + 1))
+            echo "$BL" >> $failed_file
         else
             if [[ "${VERBOSE}" -ge 1 ]]; then
                 if [[ -z "${PLAIN}" ]]; then printf "\r"; fi
@@ -803,10 +812,18 @@ for BL in ${BLACKLISTS}; do
                 if [[ -z "${PLAIN}" ]]; then printf "\r                                                          "; printf "\r"; fi
                 printf "%s%s%s : %s\n" "${GREEN}" "${DOMAIN}" "${CLEAR}" "${RESPONSE}"
             fi
-             WHITE=$((WHITE + 1))
+             echo "$BL" >> $white_file
         fi
     fi
-done
+}
+
+white_file=$(mktemp)
+failed_file=$(mktemp)
+passed_file=$(mktemp)
+invalid_file=$(mktemp)
+export -f parallel_check resolve text progress
+export REGEX_LIST REVERSED TARGET VERIFY_BL VERBOSE PLAIN COUNT YELLOW CLEAR RED GREEN SPINNER REGEX_IP REGEX_DOMAIN CMD_DIG DNSSERVER CONF_DNS_DURATION CONF_DNS_TRIES REGEX CMD_HOST CMD white_file failed_file passed_file invalid_file
+parallel -j 75% 'parallel_check {#} {}' ::: ${BLACKLISTS}
 
 # Print results
 if [[ "${VERBOSE}" -ge 0 ]]; then
@@ -819,11 +836,17 @@ if [[ "${VERBOSE}" -ge 0 ]]; then
     echo Results for "${TARGET}"
     echo
     printf "%-15s" "Tested:";   echo "${COUNT}"
-    printf "%-15s" "Passed:";   echo "${GREEN}${PASSED}${CLEAR}"
-    printf "%-15s" "Whitelisted:";  echo "${GREEN}${WHITE}${CLEAR}"
-    printf "%-15s" "Invalid:";  echo "${YELLOW}${INVALID}${CLEAR}"
-    printf "%-15s" "Blacklisted:";  echo "${RED}${FAILED}${CLEAR}"
+    printf "%-15s" "Passed:";   echo "${GREEN}$(cat $passed_file | wc -l)${CLEAR}"
+    printf "%-15s" "Whitelisted:";  echo "${GREEN}$(cat $white_file | wc -l)${CLEAR}"
+    printf "%-15s" "Invalid:";  echo "${YELLOW}$(cat $invalid_file | wc -l)${CLEAR}"
+    printf "%-15s" "Blacklisted:";  echo "${RED}$(cat $failed_file | wc -l)${CLEAR}"
     echo "----------------------------------------------------------"
 fi
 
-exit "${FAILED}"
+failed=$(cat $failed_file | wc -l)
+rm -f $passed_file $white_file $invalid_file $failed_file
+
+unset -f parallel_check resolve text progress
+unset REGEX_LIST REVERSED TARGET VERIFY_BL VERBOSE PLAIN COUNT YELLOW CLEAR RED GREEN SPINNER REGEX_IP REGEX_DOMAIN CMD_DIG DNSSERVER CONF_DNS_DURATION CONF_DNS_TRIES REGEX CMD_HOST CMD white_file failed_file passed_file invalid_file
+
+exit "${failed}"
