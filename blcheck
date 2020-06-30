@@ -102,11 +102,6 @@
         bl.mipspace.com
         bl.nordspam.com
         dbl.nordspam.com#URIBL
-        bl.nszones.com
-        dyn.nszones.com
-        sbl.nszones.com
-        ubl.nszones.com
-        wl.nszones.com#DNSWL
         safe.dnsbl.prs.proofpoint.com
         rbl.realtimeblacklist.com
         mailsl.dnsbl.rjek.com
@@ -369,7 +364,6 @@
         work.drbl.gremlin.ru
         dul.dnsbl.sorbs.netdul.ru
         bl.shlink.orgdul.ru
-     ###rbl.rbldns.ru
         dnsbl.rymsho.ru
         rhsbl.rymsho.ru
         netblockbl.spamgrouper.to
