@@ -129,11 +129,6 @@
         bl.tiopan.com
         dbl.tiopan.com#URIBL
         ubl.unsubscore.com
-        black.uribl.com
-        grey.uribl.com
-        multi.uribl.com
-        red.uribl.com
-        white.uribl.com#DNSWL
         spam.dnsbl.anonmails.de
         bl.blocklist.de
         dnsbl.darklist.de
@@ -848,7 +843,12 @@ if [[ "${VERBOSE}" -ge 0 ]]; then
 fi
 
 failed=$(cat $failed_file | wc -l)
-[ $failed -gt 0 ] && echo ${TARGET} >> $output && cat $failed_file >> $output
+if [ $failed -gt 0 ]; then
+	touch $output
+	echo ${TARGET} >> $output
+	cat $failed_file >> $output
+fi
+
 rm -f $passed_file $white_file $invalid_file $failed_file
 
 unset -f parallel_check resolve text progress
