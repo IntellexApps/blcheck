@@ -24,7 +24,7 @@
     # how many dig/host processes to run in parallel
     # this can be a number of threads (6)
     # or a percentage of cpu cores (75%)
-    j="75%"
+    j="200%"
 
     # How many tries and for how long to wait for DNS queries
     CONF_DNS_TRIES=2
