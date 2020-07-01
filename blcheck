@@ -16,6 +16,10 @@
 # =============================================================================
 
 # Config {
+    # where to log blacklist hits permanently if there are any
+    # this file will be appended, not clobbered.
+    # format is ${TARGET}\n$blacklist1\n$blacklist2, etc
+    output="~/blcheck_blacklists.txt"
 
     # How many tries and for how long to wait for DNS queries
     CONF_DNS_TRIES=2
@@ -844,6 +848,7 @@ if [[ "${VERBOSE}" -ge 0 ]]; then
 fi
 
 failed=$(cat $failed_file | wc -l)
+[ $failed -gt 0 ] && echo ${TARGET} >> $output && cat $failed_file >> $output
 rm -f $passed_file $white_file $invalid_file $failed_file
 
 unset -f parallel_check resolve text progress
