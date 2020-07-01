@@ -7,7 +7,7 @@ Script will use dig if it is found. If dig is not found script will use host.
 Features
 --------------------
 
-* More then __100 black lists__ already included!
+* More then __300 black lists__ already included!
 * Automatic distinction between __domain or IP__
 * Performs __PTR validation__ (only if domain is supplied, does not work for IP)
 * 3 verbose (-v) levels and a quiet (-q) mode
@@ -46,34 +46,10 @@ TODO
 --------------------
 1. Handle domains with multiple DNS entries.
 
-Licence
---------------------
-MIT License
-
-Copyright (c) 2018 Intellex
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
 Credits
 --------------------
 Script has been written by the [Intellex](http://intellex.rs/en) team.
-Contributors:
+Additional contributors:
 	[Darko Poljak](https://github.com/darko-poljak)
-
-
+	[Oliver Mueller](https://github.com/ogmueller)
+	[Andrej Walilko](https://github.com/ch604)
