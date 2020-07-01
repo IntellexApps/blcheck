@@ -773,7 +773,7 @@ parallel_check() {
             if [[ ! "$(resolve "${TDL}" ns)" ]]; then
                 if [[ -z "${PLAIN}" ]]; then printf "\r"; fi
                 printf "%s%sUnreachable server%s\n" "${YELLOW}" "${PREFIX}" "${CLEAR}";
-                echo "$BL" >> $invalid_file
+                echo "$BL" | cut -d= -f1 >> $invalid_file
                 ERROR=TRUE
             fi
         fi
@@ -783,7 +783,7 @@ parallel_check() {
                 if [[ -z "${PLAIN}" ]]; then printf "\r"; fi
                 printf "%s%s✓%s\n" "${CLEAR}" "${PREFIX}" "${CLEAR}";
             fi
-            echo "$BL" >> $passed_file
+            echo "$BL" | cut -d= -f1 >> $passed_file
         fi;
 
     # Invalid response
@@ -793,7 +793,7 @@ parallel_check() {
             printf "%s%sinvalid response (%s)%s\n" "${YELLOW}" "${PREFIX}" "${RESPONSE}" "${CLEAR}";
             printf "%s%${#PREFIX}s%s%s\n" "${YELLOW}" "TXT: " "$(text "${TEST}")" "${CLEAR}";
         fi;
-        INVALID=$((INVALID + 1))
+        echo "$BL" | cut -d= -f1 >> $invalid_file
 
     # matched
     else
@@ -806,7 +806,7 @@ parallel_check() {
                 if [[ -z "${PLAIN}" ]]; then printf "\r                                                          "; printf "\r"; fi
                 printf "%s%s%s : %s\n" "${RED}" "${DOMAIN}" "${CLEAR}" "${RESPONSE}"
             fi
-            echo "$BL" >> $failed_file
+            echo "$BL" | cut -d= -f1 >> $failed_file
         else
             if [[ "${VERBOSE}" -ge 1 ]]; then
                 if [[ -z "${PLAIN}" ]]; then printf "\r"; fi
@@ -816,7 +816,7 @@ parallel_check() {
                 if [[ -z "${PLAIN}" ]]; then printf "\r                                                          "; printf "\r"; fi
                 printf "%s%s%s : %s\n" "${GREEN}" "${DOMAIN}" "${CLEAR}" "${RESPONSE}"
             fi
-             echo "$BL" >> $white_file
+             echo "$BL" | cut -d= -f1 >> $white_file
         fi
     fi
 }
