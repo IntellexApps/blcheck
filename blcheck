@@ -6,8 +6,8 @@
 # description       : Test any domain against more than 100 black lists.
 # author            : Intellex
 # contributors      : Darko Poljak, Oliver Mueller, Andrej Walilko
-# date              : Jun 30 2020
-# version           : 0.7.0
+# date              : Jul 01 2020
+# version           : 0.7.5
 # usage             : blcheck [options] <domain_or_ip>
 # reference         : http://multirbl.valli.org/list/
 # code style        : https://google.github.io/styleguide/shell.xml
@@ -19,7 +19,12 @@
     # where to log blacklist hits permanently if there are any
     # this file will be appended, not clobbered.
     # format is ${TARGET}\n$blacklist1\n$blacklist2, etc
-    output="~/blcheck_blacklists.txt"
+    output=~/blcheck_blacklists.txt
+
+    # how many dig/host processes to run in parallel
+    # this can be a number of threads (6)
+    # or a percentage of cpu cores (75%)
+    j="75%"
 
     # How many tries and for how long to wait for DNS queries
     CONF_DNS_TRIES=2
@@ -822,7 +827,7 @@ passed_file=$(mktemp)
 invalid_file=$(mktemp)
 export -f parallel_check resolve text progress
 export REGEX_LIST REVERSED TARGET VERIFY_BL VERBOSE PLAIN COUNT YELLOW CLEAR RED GREEN SPINNER REGEX_IP REGEX_DOMAIN CMD_DIG DNSSERVER CONF_DNS_DURATION CONF_DNS_TRIES REGEX CMD_HOST CMD white_file failed_file passed_file invalid_file
-parallel -j 75% 'parallel_check {#} {}' ::: ${BLACKLISTS}
+parallel -j $j 'parallel_check {#} {}' ::: ${BLACKLISTS}
 
 # Print results
 if [[ "${VERBOSE}" -ge 0 ]]; then
