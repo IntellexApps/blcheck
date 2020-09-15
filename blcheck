@@ -6,8 +6,8 @@
 # description       : Test any domain against more than 100 blocklists.
 # author            : Intellex
 # contributors      : Darko Poljak, Oliver Mueller, Andrej Walilko
-# date              : Jul 01 2020
-# version           : 0.7.5
+# date              : Sep 15 2020
+# version           : 0.7.6
 # usage             : blcheck [options] <domain_or_ip>
 # reference         : http://multirbl.valli.org/list/
 # code style        : https://google.github.io/styleguide/shell.xml
@@ -447,7 +447,7 @@
     # Error handling
     error() {
         echo "ERROR: $1" >&2
-        exit 2
+        exit 254
     }
 
     # Show progress
@@ -568,14 +568,21 @@ TARGET=$1
 
 if [ ! $(which parallel 2> /dev/null) ]; then
 	echo "Parallel missing, trying to install..."
-	[ ! "$(yum -q provides parallel)" ] && yum -y -q install epel-release
-	yum -y -q install parallel
+	if [ $(which yum 2> /dev/null) ]; then
+		[ ! "$(yum -q provides parallel)" ] && yum -y -q install epel-release
+		yum -y -q install parallel
+	elif [ $(which dnf 2> /dev/null) ]; then
+		[ ! "$(dnf -q provides parallel)" ] && dnf -y -q install epel-release
+		dnf -y -q install parallel
+	else #assumed debian-like
+		apt-get -qq update
+		apt-get -y -q install parallel
+	fi
 	if [ "$(which parallel 2> /dev/null)" ]; then
 		mkdir ~/.parallel
 		touch ~/.parallel/will-cite
 	else
-		echo "Failed to install parallel, exiting."
-		exit 1
+		error "Failed to install parallel, exiting."
 	fi
 fi
 
