@@ -186,11 +186,11 @@
     fi
 
     # Define spinner
-    SPINNER="-\|/"
+    #SPINNER="-\|/"
     #SPINNER=".oO@*"
     #SPINNER="▉▊▋▌▍▎▏▎▍▌▋▊▉"
     #SPINNER="←↖↑↗→↘↓↙"
-    #SPINNER="▁▂▃▄▅▆▇█▇▆▅▄▃▁"
+    SPINNER="▁▂▃▄▅▆▇█▇▆▅▄▃▁"
     #SPINNER="▖▘▝▗"
     #SPINNER="┤┘┴└├┌┬┐"
     #SPINNER="◢◣◤◥"
