@@ -451,6 +451,7 @@ for BL in $BLACKLISTS; do
     # Get the status
     RESPONSE=$(resolve "$TEST")
     START=$(echo "$RESPONSE" | cut -c1-4)
+    LONGER_START=$(echo "$RESPONSE" | cut -c1-8)
 
     # Not blacklisted
     if [ ! "$RESPONSE" ]; then
@@ -476,7 +477,8 @@ for BL in $BLACKLISTS; do
         fi;
 
     # Invalid response
-    elif [ "$START" != "127."  ]; then
+    # 127.255 responses indicate an error, at least for Spamhaus - https://www.spamhaus.org/news/article/807/using-our-public-mirrors-check-your-return-codes-now.
+    elif [ "$START" != "127." ] || [ "$LONGER_START" == "127.255." ]; then
         if [ $VERBOSE -ge 1 ]; then
             if test -z "$PLAIN"; then printf "\r"; fi
             printf "%s%sinvalid response (%s)%s\n" "$YELLOW" "$PREFIX" "$RESPONSE" "$CLEAR";
