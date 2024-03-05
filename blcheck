@@ -46,7 +46,7 @@
     #   block.list.com=127\.0\.0\.[23]
     # - Regexp defined return code for a URI based blocklist
     #   block.list.com=127\.0\.[0-9]+\.0#URIBL
-    CONF_BLACKLISTS="
+    CONF_BLOCKLISTS="
         whitelist.rbl.ispa.at#DNSWL
         t3direct.dnsbl.net.au
         ucepn.dnsbl.net.au
@@ -382,7 +382,7 @@
         # reputation/scoring pages
         # score.senderscore.com
 
-    CONF_BLACKLISTS_TEST="
+    CONF_BLOCKLISTS_TEST="
         rbl.rbldns.ru
         rbl.rbldns.ru=127\.0\.0\.1
         rbl.rbldns.ru#DNSWL
@@ -516,7 +516,7 @@
             error "File $1 cannot be opened for reading, make sure it exists and that you have appropriate privileges"
         fi
 
-        CONF_BLACKLISTS=$(cat "$1")
+        CONF_BLOCKLISTS=$(cat "$1")
     }
 
     # Show help
@@ -650,12 +650,12 @@ else
 fi
 
 # Filter out the blocklists
-BLACKLISTS=""
+BLOCKLISTS=""
 COUNT_DNSBL=0
 COUNT_DNSWL=0
 COUNT_URIBL=0
 COUNT=0
-for BL in ${CONF_BLACKLISTS}; do
+for BL in ${CONF_BLOCKLISTS}; do
     if [[ "${BL}" ]]; then
         if [[ ${BL} =~ ${REGEX_LIST} ]]; then
             DOMAIN="${BASH_REMATCH[1]}"
@@ -687,10 +687,10 @@ for BL in ${CONF_BLACKLISTS}; do
                 COUNT=$((COUNT + 1))
 
                 # It is a proper blocklist
-                if [[ "${BLACKLISTS}" ]]; then
-                    BLACKLISTS=$(echo "${BLACKLISTS}\n${DOMAIN}=${FILTER}#${TYPE}")
+                if [[ "${BLOCKLISTS}" ]]; then
+                    BLOCKLISTS=$(echo "${BLOCKLISTS}\n${DOMAIN}=${FILTER}#${TYPE}")
                 else
-                    BLACKLISTS="${DOMAIN}=${FILTER}#${TYPE}"
+                    BLOCKLISTS="${DOMAIN}=${FILTER}#${TYPE}"
                 fi
             fi
             fi
@@ -834,7 +834,7 @@ passed_file=$(mktemp)
 invalid_file=$(mktemp)
 export -f parallel_check resolve text progress
 export REGEX_LIST REVERSED TARGET VERIFY_BL VERBOSE PLAIN COUNT YELLOW CLEAR RED GREEN SPINNER REGEX_IP REGEX_DOMAIN CMD_DIG DNSSERVER CONF_DNS_DURATION CONF_DNS_TRIES REGEX CMD_HOST CMD allow_file failed_file passed_file invalid_file
-parallel -j $j 'parallel_check {#} {}' ::: ${BLACKLISTS}
+parallel -j $j 'parallel_check {#} {}' ::: ${BLOCKLISTS}
 
 # Print results
 if [[ "${VERBOSE}" -ge 0 ]]; then
