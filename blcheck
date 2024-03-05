@@ -30,7 +30,7 @@
     CONF_DNS_TRIES=2
     CONF_DNS_DURATION=3
 
-    # Blacklists to check
+    # blocklists to check
     # Example formats:
     # - General format
     #   {ip_or_domain}={filter}#{type}
@@ -507,7 +507,7 @@
     }
 
     # Load the blocklist from file
-    loadBlacklists() {
+    loadBlocklists() {
 
         # Make sure the file is readable
         if [[ -z "$1" ]]; then
@@ -548,7 +548,7 @@ HELP
 while getopts :vqphcl:d: arg; do
     case "${arg}" in
         d) DNSSERVER="${OPTARG}";;
-        l) loadBlacklists "${OPTARG}";;
+        l) loadBlocklists "${OPTARG}";;
         c) VERIFY_BL=TRUE;;
         v) VERBOSE=$((VERBOSE + 1));;
         q) VERBOSE=-1;;
@@ -850,7 +850,7 @@ if [[ "${VERBOSE}" -ge 0 ]]; then
     printf "%-15s" "Passed:";   echo "${GREEN}$(cat $passed_file | wc -l)${CLEAR}"
     printf "%-15s" "Whitelisted:";  echo "${GREEN}$(cat $allow_file | wc -l)${CLEAR}"
     printf "%-15s" "Invalid:";  echo "${YELLOW}$(cat $invalid_file | wc -l)${CLEAR}"
-    printf "%-15s" "Blacklisted:";  echo "${RED}$(cat $failed_file | wc -l)${CLEAR}"
+    printf "%-15s" "Blocklisted:";  echo "${RED}$(cat $failed_file | wc -l)${CLEAR}"
     echo "----------------------------------------------------------"
 fi
 
