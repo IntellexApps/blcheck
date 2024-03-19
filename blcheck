@@ -419,16 +419,6 @@
 
     # Define spinner
     SPINNER="-\|/"
-    #SPINNER=".oO@*"
-    #SPINNER="▉▊▋▌▍▎▏▎▍▌▋▊▉"
-    #SPINNER="←↖↑↗→↘↓↙"
-    #SPINNER="▁▂▃▄▅▆▇█▇▆▅▄▃▁"
-    #SPINNER="▖▘▝▗"
-    #SPINNER="┤┘┴└├┌┬┐"
-    #SPINNER="◢◣◤◥"
-    #SPINNER="◰◳◲◱"
-    #SPINNER="◴◷◶◵"
-    #SPINNER="◐◓◑◒"
 
     VERBOSE=0
 
